@@ -12,12 +12,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { auth } from "../lib/auth";
 import { redirect } from "next/navigation";
+import { getImage } from "@/lib/utils";
 
 export default async function Home() {
   const session = await auth();
   if (!session) redirect("/sign-in");
 
   const items = await prismaClient.item.findMany();
+
+  // const imageUrl = await getImage("ShinyTreasures.jpg");
+  // console.log(imageUrl);
 
   return (
     <div className="space-y-8">

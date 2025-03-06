@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "imgur.com",
+        hostname: "dd-pokeimages.s3.us-east-1.amazonaws.com",
         pathname: "/**",
       },
     ],

@@ -31,24 +31,24 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { id } = useParams();
 
-  const initData = async () => {
-    const item = await prismaClient.item.findUnique({
-      where: { id: parseInt(id as string) },
-    });
+  // const initData = async () => {
+  //   const item = await prismaClient.item.findUnique({
+  //     where: { id: parseInt(id as string) },
+  //   });
 
-    if (item) {
-      setFormData({
-        name: item.name,
-        image: item.image,
-        price: item.price.toString(),
-        description: item.description,
-        quantity: item.quantity.toString(),
-      });
-    } else {
-      toast.error("Item not found");
-      router.push("/admin/items");
-    }
-  };
+  //   if (item) {
+  //     setFormData({
+  //       name: item.name,
+  //       image: item.image,
+  //       price: item.price.toString(),
+  //       description: item.description,
+  //       quantity: item.quantity.toString(),
+  //     });
+  //   } else {
+  //     toast.error("Item not found");
+  //     router.push("/admin/items");
+  //   }
+  // };
 
   useEffect(() => {
     fetch(`/api/items/${id}`)
@@ -79,10 +79,12 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     // Basic form validation
     if (Object.values(formData).some((field) => field === "")) {
       toast.error("Please fill in all fields");
+      setIsLoading(false);
       return;
     }
 
@@ -97,8 +99,8 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
       quantity,
     });
 
-    const response = await fetch("/api/items/new", {
-      method: "POST",
+    const response = await fetch(`/api/items/${id}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: validatedData.name,
@@ -110,11 +112,13 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
     });
 
     if (!response.ok) {
-      toast.error("Error creating item");
+      toast.error("Error updating item");
     } else if (response.ok) {
-      toast.success("Successfully created item!");
+      toast.success("Successfully updated item!");
       redirect("/admin/items");
     }
+
+    setIsLoading(false);
   };
 
   const handleDelete = async () => {

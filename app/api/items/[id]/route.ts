@@ -23,18 +23,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const { id } = await params;
     const data = await request.json();
 
     // Validate required fields
-    const requiredFields = [
-      "name",
-      "price",
-      "description",
-      "type",
-      "rarity",
-      "inStock",
-    ];
+    const requiredFields = ["name", "price", "description", "quantity"];
+
     for (const field of requiredFields) {
       if (data[field] === undefined) {
         return NextResponse.json(
@@ -52,16 +46,16 @@ export async function PUT(
       );
     }
 
-    if (typeof data.inStock !== "number" || data.inStock < 0) {
+    if (typeof data.quantity !== "number" || data.quantity < 0) {
       return NextResponse.json(
-        { error: "In stock must be a non-negative number" },
+        { error: "Quantity must be a non-negative number" },
         { status: 400 }
       );
     }
 
     // Check if card exists
     const existingCard = await prismaClient.item.findUnique({
-      where: { id: id },
+      where: { id: parseInt(id) },
     });
 
     if (!existingCard) {
@@ -70,7 +64,7 @@ export async function PUT(
 
     // Update the card
     const updatedItem = await prismaClient.item.update({
-      where: { id: id },
+      where: { id: parseInt(id) },
       data: {
         name: data.name,
         image: data.image,

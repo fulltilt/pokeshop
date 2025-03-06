@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Total Cards</CardTitle>
+            <CardTitle>Total Items</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">{cardCount}</p>
@@ -50,7 +50,7 @@ export default async function AdminDashboard() {
       </div>
       <div className="flex space-x-4">
         <Button>
-          <Link href="/admin/cards">Manage Cards</Link>
+          <Link href="/admin/items">Manage Items</Link>
         </Button>
         <Button>
           <Link href="/admin/users">Manage Users</Link>

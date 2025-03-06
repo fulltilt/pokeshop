@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,17 +31,17 @@ import { z } from "zod";
 
 type OrderSchema = z.infer<typeof orderSchema>;
 
-export default function AdminOrderDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+function AdminOrderDetailPage() {
+  const params = useParams();
   const router = useRouter();
   const [order, setOrder] = useState<OrderSchema>();
   const [status, setStatus] = useState(order?.status || "PENDING");
-  // const order = mockOrders.find((o) => o.id === Number.parseInt(params.id));
+
+  const { id } = params;
   useEffect(() => {
-    fetch("api/order").then((res) => setOrder(res));
+    fetch(`/api/orders/${id}`)
+      .then((res) => res.json())
+      .then((res) => setOrder(res));
   }, []);
 
   if (!order) {
@@ -63,20 +63,21 @@ export default function AdminOrderDetailPage({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <strong>Customer:</strong> {order.customerName}
+            <strong>Customer:</strong> {order.name}
           </div>
           <div>
-            <strong>Email:</strong> {order.customerEmail}
+            <strong>Email:</strong> {order.email}
           </div>
           <div>
             <strong>Address:</strong> {order.address}, {order.city},{" "}
             {order.country} {order.zipCode}
           </div>
           <div>
-            <strong>Date:</strong> {order.createdAt.toLocaleDateString()}
+            <strong>Date:</strong>{" "}
+            {new Date(order.createdAt).toLocaleDateString()}
           </div>
           <div>
-            <strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}
+            <strong>Total Amount:</strong> ${order.total.toFixed(2)}
           </div>
           <div className="flex items-center space-x-2">
             <strong>Status:</strong>
@@ -105,7 +106,7 @@ export default function AdminOrderDetailPage({
             <TableBody>
               {order.items.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell>{item.card.name}</TableCell>
+                  <TableCell>{item.item.name}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>${item.price.toFixed(2)}</TableCell>
                   <TableCell>
@@ -125,3 +126,5 @@ export default function AdminOrderDetailPage({
     </div>
   );
 }
+
+export default AdminOrderDetailPage;

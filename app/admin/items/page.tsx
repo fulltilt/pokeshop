@@ -79,7 +79,7 @@ export default function ManageItems() {
   return (
     <div className="container mx-auto p-4 gap-4">
       <h1 className="text-3xl font-bold">Manage Items</h1>
-      <Button>
+      <Button className="mt-4">
         <Link href="/admin/items/new">Add New Item</Link>
       </Button>
       {isLoading ? (

@@ -31,25 +31,6 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { id } = useParams();
 
-  // const initData = async () => {
-  //   const item = await prismaClient.item.findUnique({
-  //     where: { id: parseInt(id as string) },
-  //   });
-
-  //   if (item) {
-  //     setFormData({
-  //       name: item.name,
-  //       image: item.image,
-  //       price: item.price.toString(),
-  //       description: item.description,
-  //       quantity: item.quantity.toString(),
-  //     });
-  //   } else {
-  //     toast.error("Item not found");
-  //     router.push("/admin/items");
-  //   }
-  // };
-
   useEffect(() => {
     fetch(`/api/items/${id}`)
       .then((res) => res.json())

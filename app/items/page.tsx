@@ -1,33 +1,22 @@
 import { prismaClient } from "@/db";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { auth } from "../lib/auth";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default async function Home() {
-  const session = await auth();
-  if (!session) redirect("/sign-in");
-
+export default async function ItemsPage() {
   const items = await prismaClient.item.findMany();
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-center">
-        Welcome to Pokémon Singles Shop
-      </h2>
-      <p className="text-center text-muted-foreground">
-        Find the perfect individual Pokémon cards for your collection!
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 m-12">
+    <div className="gap-8">
+      <h2 className="text-3xl font-bold text-center">All Items</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {items.map((item) => (
           <Card key={item.id}>
             <CardHeader>
@@ -56,8 +45,3 @@ export default async function Home() {
     </div>
   );
 }
-
-// incremental static site generation
-// export const revalidate = 60 // revalidate every 60 seconds
-// or
-// export const dynamic = 'force-dynamic'

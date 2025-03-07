@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,7 @@ export default function NewCardPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log(formData);
     // Basic form validation
     if (Object.values(formData).some((field) => field === "")) {
       toast.error("Please fill in all fields");
@@ -70,8 +70,36 @@ export default function NewCardPage() {
       toast.error("Error creating item");
     } else if (response.ok) {
       toast.success("Successfully created item!");
-      redirect("/admin/cards");
+      redirect("/admin/items");
     }
+  };
+
+  const uploadFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file: File | null | undefined = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const fileData = event.target?.result;
+
+      if (fileData) {
+        const presignedURL = new URL("/api/presigned", window.location.href);
+        presignedURL.searchParams.set("fileName", file.name);
+        presignedURL.searchParams.set("contentType", file.type);
+        fetch(presignedURL.toString())
+          .then((res) => res.json())
+          .then((res) => {
+            const body = new Blob([fileData], { type: file.type });
+            fetch(res.signedUrl, {
+              body,
+              method: "PUT",
+            }).then((res) => {
+              console.log(res);
+              setFormData((prev) => ({ ...prev, image: file.name }));
+            });
+          });
+      }
+    };
+    reader.readAsArrayBuffer(file);
   };
 
   return (
@@ -83,7 +111,7 @@ export default function NewCardPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Card Name</Label>
+              <Label htmlFor="name">Item Name</Label>
               <Input
                 id="name"
                 name="name"
@@ -97,8 +125,9 @@ export default function NewCardPage() {
               <Input
                 id="image"
                 name="image"
-                value={formData.image}
-                onChange={handleInputChange}
+                // value={formData.image} // errors out if you leave set value for form uploads
+                onChange={uploadFile}
+                type="file"
                 required
               />
             </div>

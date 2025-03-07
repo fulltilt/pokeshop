@@ -20,7 +20,7 @@ export async function GET(
 ): Promise<ResponseData> {
   try {
     const { imageUrl } = await params;
-    console.log(imageUrl);
+
     const command = new GetObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME!,
       Key: imageUrl,

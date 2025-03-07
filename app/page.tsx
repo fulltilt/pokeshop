@@ -20,9 +20,6 @@ export default async function Home() {
 
   const items = await prismaClient.item.findMany();
 
-  // const imageUrl = await getImage("ShinyTreasures.jpg");
-  // console.log(imageUrl);
-
   return (
     <div className="space-y-8">
       <h2 className="text-3xl font-bold text-center">
@@ -32,30 +29,34 @@ export default async function Home() {
         Find the perfect individual Pokémon cards for your collection!
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 m-12">
-        {items.map((item) => (
-          <Card key={item.id}>
-            <CardHeader>
-              <CardTitle>{item.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Image
-                src={item.image || "/placeholder.svg"}
-                alt={item.name}
-                width={200}
-                height={300}
-                className="mx-auto"
-              />
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <span className="text-lg font-bold">
-                ${item.price.toFixed(2)}
-              </span>
-              <Button>
-                <Link href={`/items/${item.id}`}>View Details</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {items.map(async (item) => {
+          const imageUrl = await getImage(item.image);
+
+          return (
+            <Card key={item.id}>
+              <CardHeader>
+                <CardTitle>{item.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <img
+                  src={imageUrl || "/placeholder.svg"}
+                  alt={item.name}
+                  width={200}
+                  height={300}
+                  className="mx-auto"
+                />
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <span className="text-lg font-bold">
+                  ${item.price.toFixed(2)}
+                </span>
+                <Button>
+                  <Link href={`/items/${item.id}`}>View Details</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

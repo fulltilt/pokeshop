@@ -8,7 +8,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <CartProvider>
-        <Navbar user={{}} />
+        <Navbar />
         {/* <main className="h-screen flex justify-center py-8"> */}
         <main className="flex-grow container mx-auto px-4 py-8">
           {children}

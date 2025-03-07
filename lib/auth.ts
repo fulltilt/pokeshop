@@ -13,9 +13,6 @@ const adapter = PrismaAdapter(db);
 
 export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
   adapter,
-  // session: {
-  //   strategy: "jwt",
-  // },
   providers: [
     Credentials({
       credentials: {
@@ -44,16 +41,42 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
           return null;
         }
 
-        return user;
+        return {
+          id: user.id.toString(),
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account?.provider === "credentials") {
-        token.credentials = true;
+    // async jwt({ token, account }) {
+    //   if (account?.provider === "credentials") {
+    //     token.credentials = true;
+    //   }
+    //   return token;
+    // },
+    // jwt: ({ token, user }) => {
+    //   if (user) {
+    //     // Make sure we're explicitly setting the role property
+    //     token.id = user.id;
+    //     token.role = user.role;
+    //     // For debugging
+    //     console.log("JWT callback - user role:", user.role);
+    //   }
+    //   return token;
+    // },
+    // NOTE: While using `any` isn't ideal for type safety, it's a practical solution in this case since we're working with NextAuth's internal types
+    session: ({ session, token }: { session: any; token: any }) => {
+      if (token && session.user) {
+        // Explicitly set the user properties including role
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        // For debugging
+        console.log("Session callback - user role:", token.role);
       }
-      return token;
+      return session;
     },
   },
   jwt: {

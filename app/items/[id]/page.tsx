@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
+import { getImage } from "@/lib/utils";
 
 export default async function CardDetailsPage({
   params,
@@ -24,6 +25,8 @@ export default async function CardDetailsPage({
     notFound();
   }
 
+  const imageUrl = await getImage(item.image);
+
   return (
     <div className="max-w-2xl mx-auto flex">
       <Card>
@@ -31,14 +34,14 @@ export default async function CardDetailsPage({
           <CardTitle className="text-3xl">{item.name}</CardTitle>
         </CardHeader>
         <CardContent className="gap-4 overflow-y-auto">
-          <Image
-            src={item.image || "/placeholder.svg"}
+          <img
+            src={imageUrl || "/placeholder.svg"}
             alt={item.name}
             width={300}
             height={450}
             className="mx-auto"
           />
-          <p className="text-lg">{item.description}</p>
+          <p className="text-lg mt-4 mb-4">{item.description}</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <strong>In Stock:</strong> {item.quantity > 0 ? "Yes" : "No"}

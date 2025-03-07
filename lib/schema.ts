@@ -7,7 +7,7 @@ export const loginSchema = z.object({
 
 export const itemSchema = z.object({
   name: z.string().min(3),
-  image: z.string().url(),
+  image: z.string(),
   price: z.number(),
   description: z.string(),
   quantity: z.number(),

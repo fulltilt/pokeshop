@@ -1,69 +1,79 @@
-import { auth } from "../../../lib/auth";
-import { signIn } from "../../../lib/auth";
+"use client";
+
+import type React from "react";
+
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { executeAction } from "../../../lib/executeAction";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { toast } from "sonner";
 
-const Page = async () => {
-  const session = await auth();
-  if (session) redirect("/");
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result?.error) {
+      toast.error(result.error);
+    } else {
+      router.push("/");
+    }
+  };
 
   return (
-    <div className="w-full max-w-sm mx-auto gap-6">
-      <h1 className="text-2xl font-bold text-center mb-6">Sign In</h1>
-
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        {/* <div className="relative flex justify-center text-sm">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with email
-          </span>
-        </div> */}
-      </div>
-
-      {/* Email/Password Sign In */}
-      <form
-        className="space-y-4"
-        action={async (formData: FormData) => {
-          "use server";
-
-          await executeAction({
-            actionFn: async () => {
-              await signIn("credentials", formData);
-            },
-          });
-        }}
-      >
-        <Input
-          name="email"
-          placeholder="Email"
-          type="email"
-          required
-          autoComplete="email"
-        />
-        <Input
-          name="password"
-          placeholder="Password"
-          type="password"
-          required
-          autoComplete="current-password"
-        />
-        <Button className="w-full" type="submit">
-          Sign In
-        </Button>
-      </form>
-
-      <div className="text-center">
-        <Button variant="link">
-          <Link href="/sign-up">Don&apos;t have an account? Sign up</Link>
-        </Button>
-      </div>
+    <div className="flex items-center justify-center min-h-screen ">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Login</CardTitle>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="w-full mt-4">
+              Login
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
-};
-
-export default Page;
+}

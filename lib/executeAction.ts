@@ -10,14 +10,15 @@ const executeAction = async <T>({
   successMessage = "The actions was successful",
 }: Options<T>): Promise<{ success: boolean; message: string }> => {
   try {
-    await actionFn();
+    const res = await actionFn();
+    console.log("asdvsd", res);
 
     return {
       success: true,
       message: successMessage,
     };
   } catch (error) {
-    console.log(error);
+    console.log("asfddsa", error);
     if (isRedirectError(error)) {
       throw error;
     }

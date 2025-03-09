@@ -51,22 +51,12 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
     }),
   ],
   callbacks: {
-    // async jwt({ token, account }) {
-    //   if (account?.provider === "credentials") {
-    //     token.credentials = true;
-    //   }
-    //   return token;
-    // },
-    // jwt: ({ token, user }) => {
-    //   if (user) {
-    //     // Make sure we're explicitly setting the role property
-    //     token.id = user.id;
-    //     token.role = user.role;
-    //     // For debugging
-    //     console.log("JWT callback - user role:", user.role);
-    //   }
-    //   return token;
-    // },
+    async jwt({ token, account }) {
+      if (account?.provider === "credentials") {
+        token.credentials = true;
+      }
+      return token;
+    },
     // NOTE: While using `any` isn't ideal for type safety, it's a practical solution in this case since we're working with NextAuth's internal types
     session: ({ session, token }: { session: any; token: any }) => {
       if (token && session.user) {

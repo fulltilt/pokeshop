@@ -36,6 +36,7 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 https://medium.com/@zorenal/fetching-and-rendering-images-from-aws-s3-using-next-js-v13app-router-449892b32c98
+https://neon.tech/guides/next-upload-aws-s3
 
 WEBHOOK
 stripe listen --forward-to localhost:4242/webhook

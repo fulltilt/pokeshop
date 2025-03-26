@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import { SessionProvider } from "next-auth/react";
-import { CartProvider } from "@/components/CartProvider";
 import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Pokémon Singles Shop",
+  title: "DJCollects",
   description: "Buy individual Pokémon cards for your collection",
 };
 

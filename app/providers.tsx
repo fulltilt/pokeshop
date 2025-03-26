@@ -15,7 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </main>
         <footer className="bg-muted text-muted-foreground p-4 mt-auto">
           <div className="container mx-auto text-center">
-            © 2025 Pokémon Singles Shop. All rights reserved.
+            © 2025 DJCollects. All rights reserved.
           </div>
         </footer>
         <Toaster />

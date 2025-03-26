@@ -94,8 +94,3 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
     },
   },
 });
-
-// export const handlers = result.handlers;
-// export const auth = result.auth;
-// export const signIn = result.signIn;
-// export const signOut = result.signOut;

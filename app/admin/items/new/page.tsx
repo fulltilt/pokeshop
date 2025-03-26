@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { ChangeEvent, useState } from "react";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -36,7 +34,7 @@ export default function NewCardPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+
     // Basic form validation
     if (Object.values(formData).some((field) => field === "")) {
       toast.error("Please fill in all fields");
@@ -93,7 +91,6 @@ export default function NewCardPage() {
               body,
               method: "PUT",
             }).then((res) => {
-              console.log(res);
               setFormData((prev) => ({ ...prev, image: file.name }));
             });
           });

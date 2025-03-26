@@ -5,37 +5,53 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useCart } from "./CartProvider";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { itemSchema } from "@/lib/schema";
 import { z } from "zod";
-import { useCart } from "./CartProvider";
 
 export type ItemSchema = z.infer<typeof itemSchema> & { id: number };
 
 export default function AddToCartButton({ item }: { item: ItemSchema }) {
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { updateCartItemsCount } = useCart();
+  const { data: session } = useSession();
+  const router = useRouter();
 
-  const addToCart = () => {
-    const cartItem = {
-      id: item.id,
-      name: item.name,
-      image: item.image,
-      price: item.price,
-      quantity: quantity,
-    };
-
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingItemIndex = cart.findIndex((i: any) => i.id === item.id);
-
-    if (existingItemIndex > -1) {
-      cart[existingItemIndex].quantity += quantity;
-    } else {
-      cart.push(cartItem);
+  const addToCart = async () => {
+    if (!session?.user) {
+      toast.error("You need to be logged in to add items to your cart.");
+      router.push("/login");
+      return;
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartItemsCount();
-    toast(`${quantity} ${item.name} added to your cart.`);
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemId: item.id,
+          quantity: quantity,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add item to cart");
+      }
+
+      updateCartItemsCount();
+      toast.success(`${quantity} ${item.name} added to your cart.`);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add item to cart. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,10 +65,12 @@ export default function AddToCartButton({ item }: { item: ItemSchema }) {
         min="1"
         max={item.quantity}
         value={quantity}
-        onChange={(e) => setQuantity(Number.parseInt(e.target.value))}
+        onChange={(e) => setQuantity(Number(e.target.value))}
         className="w-20"
       />
-      <Button onClick={addToCart}>Add to Cart</Button>
+      <Button onClick={addToCart} disabled={isLoading}>
+        {isLoading ? "Adding..." : "Add to Cart"}
+      </Button>
     </div>
   );
 }

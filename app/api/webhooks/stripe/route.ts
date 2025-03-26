@@ -24,6 +24,8 @@ export async function POST(req: Request) {
     );
   }
 
+  // if (event.type === 'payment_intent.succeeded')
+  // if (event.type === 'payment_intent.payment_failed')
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
@@ -38,6 +40,7 @@ export async function POST(req: Request) {
       where: { id: Number.parseInt(session.metadata!.orderId!) },
       include: { items: true },
     });
+    console.log("asdfasdfdsa", order);
 
     if (order) {
       for (const item of order.items) {

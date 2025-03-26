@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   role          UserRole @default(CUSTOMER)
   orders        Order[]
+  cart      Cart?
 
   // Optional for WebAuthn support
   Authenticator Authenticator[]
@@ -98,6 +99,7 @@ model Item {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   OrderItem   OrderItem[]
+  CartItem    CartItem[]
 }
 
 model Order {
@@ -125,6 +127,26 @@ model OrderItem {
   price     Float
   order     Order       @relation(fields: [orderId], references: [id])
   item      Item @relation(fields: [itemId], references: [id])
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    String        @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int         @id @default(autoincrement())
+  cartId    Int
+  itemId    Int
+  quantity  Int
+  cart      Cart        @relation(fields: [cartId], references: [id])
+  item      Item @relation(fields: [itemId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 enum OrderStatus {

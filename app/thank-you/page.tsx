@@ -1,5 +1,4 @@
-"use client";
-
+import { prismaClient } from "@/db";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,27 +8,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { orderSchema } from "../../lib/schema";
-import { z } from "zod";
+import { auth } from "@/lib/auth";
 
-export type OrderSchema = z.infer<typeof orderSchema>;
+export default async function ThankYouPage({
+  searchParams,
+}: {
+  searchParams: { session_id: string };
+}) {
+  const sessionId = searchParams.session_id;
+  const session = await auth();
+  const userId = session?.user?.id;
 
-export default function ThankYouPage() {
-  const [order, setOrder] = useState<OrderSchema>();
-
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId");
-
-  useEffect(() => {
-    localStorage.removeItem("cart");
-
-    fetch(`/api/order/${orderId}`)
-      .then((res) => res.json())
-      .then((res) => setOrder(res))
-      .catch((err) => console.log(err));
-  }, []);
+  const order = await prismaClient.order.findFirst({
+    where: { userId: userId! },
+    include: { items: { include: { item: true } } },
+  });
 
   if (!order) {
     return <div>Order not found</div>;
@@ -45,12 +38,12 @@ export default function ThankYouPage() {
         </CardHeader>
         <CardContent>
           <p className="text-center mb-4">
-            Your order has been received and is being processed. You will
-            receive an email confirmation shortly.
+            Your order has been received and payment has been processed
+            successfully. You will receive an email confirmation shortly.
           </p>
           <div className="space-y-2">
             <h3 className="font-bold">Order Details:</h3>
-            <p>Order ID: {order?.id}</p>
+            <p>Order ID: {order.id}</p>
             <p>Total Amount: ${order.total.toFixed(2)}</p>
             <p>Status: {order.status}</p>
             <h4 className="font-bold mt-4">Items:</h4>

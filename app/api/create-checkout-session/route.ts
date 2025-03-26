@@ -15,10 +15,15 @@ export async function POST(req: Request) {
       // Get the user session
       const session = await auth();
 
+      const userId = session?.user?.id;
+
       // Create order in database
       const order = await prismaClient.order.create({
         data: {
-          userId: session?.user?.id ? session.user.id : "0", // Use 0 for guest orders
+          user: {
+            connect: { id: userId },
+          },
+          // userId: userId, // Use 0 for guest orders
           name: customer.name,
           email: customer.email,
           address: customer.address,
@@ -26,15 +31,16 @@ export async function POST(req: Request) {
           country: customer.country,
           zipCode: customer.zipCode,
           total: items.reduce(
-            (total: number, item: any) => total + item.price * item.quantity,
+            (total: number, item: any) =>
+              total + item.item.price * item.quantity,
             0
           ),
           items: {
             create: items.map((item: any) => ({
-              itemId: item.id,
+              itemId: item.itemId,
               // name: item.name,
               quantity: item.quantity,
-              price: item.price,
+              price: item.item.price,
             })),
           },
         },
@@ -50,9 +56,9 @@ export async function POST(req: Request) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: item.name,
+              name: item.item.name,
             },
-            unit_amount: Math.round(item.price * 100), // Stripe expects amounts in cents
+            unit_amount: Math.round(item.item.price * 100), // Stripe expects amounts in cents
           },
           quantity: item.quantity,
         })),

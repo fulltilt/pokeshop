@@ -23,7 +23,7 @@ export default async function ItemsPage() {
 
           return (
             <Card key={item.id}>
-              <CardHeader>
+              <CardHeader className="min-h-[3rem]">
                 <CardTitle>{item.name}</CardTitle>
               </CardHeader>
               <CardContent>

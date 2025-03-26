@@ -22,9 +22,7 @@ export default async function Home() {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-center">
-        Welcome to Pokémon Singles Shop
-      </h2>
+      <h2 className="text-3xl font-bold text-center">Welcome to DJCollects!</h2>
       <p className="text-center text-muted-foreground">
         Find the perfect individual Pokémon cards for your collection!
       </p>
@@ -34,7 +32,7 @@ export default async function Home() {
 
           return (
             <Card key={item.id}>
-              <CardHeader>
+              <CardHeader className="min-h-[3rem]">
                 <CardTitle>{item.name}</CardTitle>
               </CardHeader>
               <CardContent>

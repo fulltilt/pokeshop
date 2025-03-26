@@ -29,7 +29,7 @@ export default async function CardDetailsPage({
 
   return (
     <div className="max-w-2xl mx-auto flex">
-      <Card>
+      <Card className="p-4">
         <CardHeader>
           <CardTitle className="text-3xl">{item.name}</CardTitle>
         </CardHeader>

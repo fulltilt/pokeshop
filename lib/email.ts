@@ -16,7 +16,7 @@ export async function sendOrderConfirmationEmail(
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: to,
-    subject: "Order Confirmation - Pokémon Singles Shop",
+    subject: "Order Confirmation - DJCollects",
     html: `
       <h1>Thank you for your order!</h1>
       <p>Your order has been successfully placed and is being processed.</p>
@@ -28,13 +28,15 @@ export async function sendOrderConfirmationEmail(
         ${orderDetails.items
           .map(
             (item: any) => `
-          <li>${item.name} - Quantity: ${item.quantity} - Price: $${item.price.toFixed(2)}</li>
+          <li>${item.name} - Quantity: ${
+              item.quantity
+            } - Price: $${item.price.toFixed(2)}</li>
         `
           )
           .join("")}
       </ul>
       <p>We'll send you another email when your order has been shipped.</p>
-      <p>Thank you for shopping with Pokémon Singles Shop!</p>
+      <p>Thank you for shopping with DJCollects!</p>
     `,
   };
 

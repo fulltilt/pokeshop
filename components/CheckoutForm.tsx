@@ -15,19 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import getStripe from "@/lib/stripe";
+import { cartItemSchema } from "@/lib/schema";
+import { z } from "zod";
 
-type CartItem = {
-  id: number;
-  quantity: number;
-  item: {
-    id: number;
-    name: string;
-    price: number;
-  };
-};
+type CartItemSchema = z.infer<typeof cartItemSchema>;
 
 type CheckoutFormProps = {
-  cartItems: CartItem[];
+  cartItems: CartItemSchema[];
   totalPrice: number;
 };
 

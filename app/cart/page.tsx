@@ -171,29 +171,19 @@ import { useRouter } from "next/navigation";
 import DeleteItemButton from "@/components/DeleteItemButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getImage } from "@/lib/utils";
+import { z } from "zod";
+import { cartItemSchema } from "@/lib/schema";
 
-type CartItem = {
-  id: number;
-  itemId: number;
-  cartId: number;
-  quantity: number;
-  item: {
-    id: number;
-    name: string;
-    image: string;
-    price: number;
-    description: string;
-  };
-};
+type CartItemSchema = z.infer<typeof cartItemSchema>;
 
 export default function CartPage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItemSchema[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [itemDetails, setItemDetails] = useState<Record<number, any>>({});
   const [loadingItems, setLoadingItems] = useState<Record<number, boolean>>({});
-
+  console.log(cartItems);
   // Redirect if not logged in
   useEffect(() => {
     if (session === null) {

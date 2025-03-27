@@ -29,20 +29,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { z } from "zod";
+import { orderSchema } from "@/lib/schema";
 
-type Order = {
-  id: number;
-  name: string;
-  email: string;
-  total: number;
-  status: string;
-  createdAt: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
-};
+type OrderSchema = z.infer<typeof orderSchema>;
 
 type PaginationData = {
   total: number;
@@ -53,7 +43,7 @@ type PaginationData = {
 };
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderSchema[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [pagination, setPagination] = useState<PaginationData>({

@@ -72,51 +72,39 @@ describe("AddToCartButton Component", () => {
     });
   });
 
-  it("redirects to login if user is not authenticated", async () => {
-    mockUnauthenticatedSession();
-    const mockRouterPush = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockRouterPush,
-    });
-
-    render(<AddToCartButton item={mockItem} />);
-
-    const button = screen.getByRole("button", { name: /add to cart/i });
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith("/login");
-    });
-  });
-
   it("shows loading state while adding to cart", async () => {
-    // Delay the fetch response
+    // Create a delayed promise that we can resolve manually
+    let resolvePromise: (value: any) => void = () => {};
     global.fetch = jest.fn(
       () =>
-        new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: () => Promise.resolve({ success: true }),
-              }),
-            100
-          )
-        )
+        new Promise((resolve) => {
+          resolvePromise = resolve;
+        })
     ) as jest.Mock;
 
     render(<AddToCartButton item={mockItem} />);
 
     const button = screen.getByRole("button", { name: /add to cart/i });
+    expect(button).not.toBeDisabled();
+
     fireEvent.click(button);
 
-    // Button should show loading state
-    expect(screen.getByRole("button", { name: /adding/i })).toBeInTheDocument();
+    // Check that the button is disabled during loading
+    expect(button).toBeDisabled();
 
+    // Check that the button text changes to "Adding..."
+    expect(button).toHaveTextContent(/adding/i);
+
+    // Resolve the fetch promise
+    resolvePromise({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    // Wait for the button to return to its original state
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /add to cart/i })
-      ).toBeInTheDocument();
+      expect(button).not.toBeDisabled();
+      expect(button).toHaveTextContent(/add to cart/i);
     });
   });
 
@@ -143,6 +131,23 @@ describe("AddToCartButton Component", () => {
           variant: "destructive",
         })
       );
+    });
+  });
+
+  it("redirects to login if user is not authenticated", async () => {
+    mockUnauthenticatedSession(); // note: this is affects tests that comes after this so for now putting this test last
+    const mockRouterPush = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({
+      push: mockRouterPush,
+    });
+
+    render(<AddToCartButton item={mockItem} />);
+
+    const button = screen.getByRole("button", { name: /add to cart/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith("/login");
     });
   });
 });

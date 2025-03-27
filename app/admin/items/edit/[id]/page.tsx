@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { prismaClient } from "@/db";
 import { toast } from "sonner";
 import { itemSchema } from "../../../../../lib/schema";
 

@@ -46,3 +46,17 @@ export const orderSchema = z.object({
     })
   ),
 });
+
+export const cartItemSchema = z.object({
+  id: z.number(),
+  cartId: z.number(),
+  itemId: z.number(),
+  quantity: z.number(),
+  item: z.object({
+    id: z.number(),
+    name: z.string(),
+    image: z.string(),
+    price: z.number(),
+    description: z.string(),
+  }),
+});

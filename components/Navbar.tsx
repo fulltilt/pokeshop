@@ -61,7 +61,11 @@ export default function Navbar() {
               <Link href="/cart" className="hover:underline relative">
                 <ShoppingCart className="h-6 w-6" />
                 {cartItemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span
+                    className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+                    data-testid="d-cart-quantity"
+                    aria-label="cart"
+                  >
                     {cartItemsCount}
                   </span>
                 )}

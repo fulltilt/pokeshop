@@ -9,7 +9,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { itemId } = await req.json();
+  const { itemId, quantity } = await req.json();
+
+  // Validate quantity
+  if (typeof quantity !== "number" || quantity < 1) {
+    return NextResponse.json(
+      { error: "Quantity must be at least 1" },
+      { status: 400 }
+    );
+  }
 
   try {
     const userId = session.user.id;
@@ -24,19 +32,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
+    // Check if the item exists in the cart
+    const itemExists = cart.items.some((item) => item.itemId === itemId);
+
+    if (!itemExists) {
+      return NextResponse.json(
+        { error: "Item not found in cart" },
+        { status: 404 }
+      );
+    }
+
     const cartItemId = cart?.items.filter((item) => item.itemId === itemId)[0]
       .id;
 
-    // Remove the item from the cart
-    await prismaClient.cartItem.delete({
+    // Update the item quantity
+    const updatedItem = await prismaClient.cartItem.update({
       where: { id: cartItemId },
+      data: { quantity },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, item: updatedItem });
   } catch (error) {
-    console.error("Error removing item from cart:", error);
+    console.error("Error updating cart item quantity:", error);
     return NextResponse.json(
-      { error: "Failed to remove item from cart" },
+      { error: "Failed to update quantity" },
       { status: 500 }
     );
   }

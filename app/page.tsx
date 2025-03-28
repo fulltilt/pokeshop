@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -24,7 +23,7 @@ export default async function Home() {
     <div className="space-y-8">
       <h2 className="text-3xl font-bold text-center">Welcome to DJCollects!</h2>
       <p className="text-center text-muted-foreground">
-        Find the perfect individual Pokémon cards for your collection!
+        Find the perfect individual Pokémon product for your collection!
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 m-12">
         {items.map(async (item) => {
@@ -36,7 +35,7 @@ export default async function Home() {
                 <CardTitle>{item.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <img
+                <Image
                   src={imageUrl || "/placeholder.svg"}
                   alt={item.name}
                   width={200}

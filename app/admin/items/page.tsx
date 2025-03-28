@@ -1,6 +1,5 @@
 "use client";
 
-import { prismaClient } from "@/db";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,12 +11,18 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { toast } from "sonner";
-import router from "next/dist/client/router";
 import DeleteItemButton from "@/components/DeleteItemButton";
 import { useEffect, useState } from "react";
 import { ItemSchema } from "@/components/AddToCartButton";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default function ManageItems() {
+  const { data: session } = useSession();
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   // let items = await prismaClient.item.findMany();
 
   // const handleDelete = async () => {

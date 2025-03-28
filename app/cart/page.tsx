@@ -155,7 +155,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -173,6 +173,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getImage } from "@/lib/utils";
 import { z } from "zod";
 import { cartItemSchema } from "@/lib/schema";
+import { useCart } from "@/components/CartProvider";
+import QuantityAdjuster from "@/components/QuantityAdjuster";
 
 type CartItemSchema = z.infer<typeof cartItemSchema>;
 
@@ -183,7 +185,8 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [itemDetails, setItemDetails] = useState<Record<number, any>>({});
   const [loadingItems, setLoadingItems] = useState<Record<number, boolean>>({});
-  console.log(cartItems);
+  const { updateCartItemsCount } = useCart();
+
   // Redirect if not logged in
   useEffect(() => {
     if (session === null) {
@@ -268,6 +271,34 @@ export default function CartPage() {
     }
   }, [cartItems]);
 
+  // Handle item removal
+  const handleItemRemoved = useCallback(
+    (removedItemId: number) => {
+      // Update cart items state optimistically
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.id !== removedItemId)
+      );
+      // Update cart count
+      updateCartItemsCount();
+    },
+    [updateCartItemsCount]
+  );
+
+  // Handle quantity change
+  const handleQuantityChange = useCallback(
+    (itemId: number, newQuantity: number) => {
+      // Update cart items state optimistically
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+      // Update cart count
+      updateCartItemsCount();
+    },
+    [updateCartItemsCount]
+  );
+
   // Calculate total price
   const totalPrice = cartItems.reduce((sum, item) => {
     const cardPrice = itemDetails[item.itemId]?.price || 0;
@@ -285,7 +316,12 @@ export default function CartPage() {
           Your Cart
         </h2>
         {cartItems.length === 0 ? (
-          <p className="text-center">Your cart is empty.</p>
+          <div className="text-center space-y-4">
+            <p>Your cart is empty.</p>
+            <Button asChild>
+              <Link href="/cards">Browse Cards</Link>
+            </Button>
+          </div>
         ) : (
           <Card>
             <CardHeader>
@@ -300,12 +336,12 @@ export default function CartPage() {
                       <th className="p-2">Price</th>
                       <th className="p-2">Quantity</th>
                       <th className="p-2">Total</th>
-                      <th className="p-2">Actions</th>
+                      <th className="p-2 w-10">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {cartItems.map((item) => (
-                      <tr key={item.itemId} className="border-t">
+                      <tr key={item.id} className="border-t">
                         <td className="p-2">
                           <div className="flex items-center space-x-2">
                             {loadingItems[item.itemId] ? (
@@ -345,7 +381,20 @@ export default function CartPage() {
                             )}`
                           )}
                         </td>
-                        <td className="p-2">{item.quantity}</td>
+                        <td className="p-2">
+                          {loadingItems[item.itemId] ? (
+                            <Skeleton className="h-8 w-24" />
+                          ) : (
+                            <QuantityAdjuster
+                              itemId={item.itemId}
+                              initialQuantity={item.quantity}
+                              maxQuantity={
+                                itemDetails[item.itemId]?.inStock || 10
+                              }
+                              onQuantityChange={handleQuantityChange}
+                            />
+                          )}
+                        </td>
                         <td className="p-2">
                           {loadingItems[item.itemId] ? (
                             <Skeleton className="h-4 w-16" />
@@ -356,8 +405,13 @@ export default function CartPage() {
                             ).toFixed(2)}`
                           )}
                         </td>
-                        <td className="p-2">
-                          <DeleteItemButton itemId={item.itemId} />
+                        <td className="p-2 text-right">
+                          <DeleteItemButton
+                            itemId={item.id}
+                            onRemoveSuccess={() =>
+                              handleItemRemoved(item.itemId)
+                            }
+                          />
                         </td>
                       </tr>
                     ))}
@@ -377,8 +431,8 @@ export default function CartPage() {
         )}
       </div>
       <div className="text-center mt-8">
-        <Button asChild variant="outline">
-          <Link href="/items">Continue Shopping</Link>
+        <Button variant="outline">
+          <Link href="/cards">Continue Shopping</Link>
         </Button>
       </div>
     </div>

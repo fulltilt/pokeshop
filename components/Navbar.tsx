@@ -56,8 +56,18 @@ export default function Navbar() {
             <span>All Items</span>
           </Link>
 
-          {session?.user ? (
+          {session?.user && (
             <>
+              {session?.user?.role === "ADMIN" && (
+                <Link
+                  href="/admin/dashboard"
+                  className="hover:underline flex items-center gap-1"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Admin</span>
+                </Link>
+              )}
+
               <Link href="/cart" className="hover:underline relative">
                 <ShoppingCart className="h-6 w-6" />
                 {cartItemsCount > 0 && (
@@ -70,16 +80,6 @@ export default function Navbar() {
                   </span>
                 )}
               </Link>
-
-              {session?.user?.role === "ADMIN" && (
-                <Link
-                  href="/admin/dashboard"
-                  className="hover:underline flex items-center gap-1"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Admin</span>
-                </Link>
-              )}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -108,7 +108,9 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
-          ) : (
+          )}
+
+          {session === null && (
             <>
               <Link href="/sign-in" className="hover:underline">
                 Login
@@ -121,7 +123,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex items-center space-x-2 md:hidden">
+        <div className="flex items-center space-x-2 md:hidden gap-2">
           {session?.user && (
             <Link href="/cart" className="hover:underline relative mr-2">
               <ShoppingCart className="h-6 w-6" />
@@ -145,7 +147,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-primary border-t border-border text-primary-foreground">
+        <div className="md:hidden bg-primary border-t border-border text-primary-foreground mt-2">
           <div className="container mx-auto py-4 space-y-4">
             <Link
               href="/"

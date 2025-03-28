@@ -20,9 +20,13 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
         const validatedCredentials = loginSchema.parse(credentials);
 
-        const user = await prismaClient.user.findFirst({
+        const user = await prismaClient.user.findUnique({
           where: {
             email: validatedCredentials.email,
             // password: validatedCredentials.password,
@@ -32,6 +36,7 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
         if (!user) {
           throw new Error("Invalid credentials.");
         }
+
         const isPasswordValid = await bcrypt.compare(
           validatedCredentials.password,
           user.password!
@@ -51,9 +56,14 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account?.provider === "credentials") {
         token.credentials = true;
+        token.id = user.id;
+        token.role = user.role;
+
+        // For debugging
+        console.log("JWT callback - user role:", user.role);
       }
       return token;
     },
@@ -63,6 +73,7 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
         // Explicitly set the user properties including role
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+
         // For debugging
         console.log("Session callback - user role:", token.role);
       }
@@ -91,6 +102,19 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
         return sessionToken;
       }
       return defaultEncode(params);
+    },
+  },
+  // debug: process.env.NODE_ENV === "development",
+  secret: process.env.AUTH_SECRET,
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
     },
   },
 });

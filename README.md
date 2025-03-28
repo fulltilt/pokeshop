@@ -39,7 +39,6 @@ https://medium.com/@zorenal/fetching-and-rendering-images-from-aws-s3-using-next
 https://neon.tech/guides/next-upload-aws-s3
 
 WEBHOOK
-stripe listen --forward-to localhost:4242/webhook
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
 TODO
-when deleting an item in the admin page, remove the item if it's in any carts

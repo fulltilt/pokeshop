@@ -9,8 +9,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function ManageUsers() {
+  const session = await auth();
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   const users = await prismaClient.user.findMany({
     orderBy: { createdAt: "desc" },
   });

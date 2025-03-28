@@ -2,8 +2,15 @@ import { prismaClient } from "@/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function AdminDashboard() {
+  const session = await auth();
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   const cardCount = await prismaClient.item.count();
   const userCount = await prismaClient.user.count();
   const orderCount = await prismaClient.order.count();

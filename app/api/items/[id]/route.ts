@@ -1,4 +1,5 @@
 import { prismaClient } from "@/db";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -84,7 +85,7 @@ export async function PUT(
   }
 }
 
-// New DELETE route for deleting a card
+// DELETE route for deleting an item
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
@@ -95,47 +96,51 @@ export async function DELETE(
   // if (!session || !session.user || session.user.role !== "ADMIN") {
   //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   // }
+  const session = await auth();
+
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const id = Number.parseInt(params.id);
 
-    // Check if card exists
-    const existingCard = await prismaClient.item.findUnique({
+    // Check if item exists
+    const existingItem = await prismaClient.item.findUnique({
       where: { id: id },
     });
 
-    if (!existingCard) {
-      return NextResponse.json({ error: "Card not found" }, { status: 404 });
+    if (!existingItem) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
 
-    // Check if card is used in any orders
-    const cardInOrders = await prismaClient.orderItem.findFirst({
+    // Check if item is used in any orders
+    const itemInOrders = await prismaClient.orderItem.findFirst({
       where: { itemId: id },
     });
 
-    if (cardInOrders) {
+    if (itemInOrders) {
       return NextResponse.json(
-        { error: "Cannot delete card that is referenced in orders" },
+        { error: "Cannot delete item that is referenced in orders" },
         { status: 400 }
       );
     }
 
-    // TODO
     // Delete any cart items referencing this card
-    // await prismaClient.cartItem.deleteMany({
-    //   where: { cardId: id },
-    // })
+    await prismaClient.cartItem.deleteMany({
+      where: { itemId: id },
+    });
 
-    // Delete the card
+    // Delete the item
     await prismaClient.item.delete({
       where: { id: id },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting card:", error);
+    console.error("Error deleting item:", error);
     return NextResponse.json(
-      { error: "Failed to delete card" },
+      { error: "Failed to delete item" },
       { status: 500 }
     );
   }

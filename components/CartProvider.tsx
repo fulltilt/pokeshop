@@ -43,6 +43,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           (total: number, item: any) => total + item.quantity,
           0
         ) || 0;
+
       setCartItemsCount(count);
     } catch (error) {
       console.error("Error updating cart count:", error);

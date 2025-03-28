@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/pagination";
 import { z } from "zod";
 import { orderSchema } from "@/lib/schema";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 type OrderSchema = z.infer<typeof orderSchema>;
 
@@ -43,6 +45,11 @@ type PaginationData = {
 };
 
 export default function AdminOrdersPage() {
+  const { data: session } = useSession();
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   const [orders, setOrders] = useState<OrderSchema[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");

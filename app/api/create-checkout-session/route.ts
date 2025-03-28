@@ -48,6 +48,7 @@ export async function POST(req: Request) {
           items: true,
         },
       });
+      console.log(order);
 
       // Create Stripe checkout session
       const stripeSession = await stripe.checkout.sessions.create({
@@ -70,6 +71,7 @@ export async function POST(req: Request) {
         customer_email: customer.email,
         metadata: {
           orderId: order.id.toString(),
+          testMetadata: "true",
         },
       });
 

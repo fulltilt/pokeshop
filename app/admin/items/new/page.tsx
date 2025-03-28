@@ -15,8 +15,14 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import { itemSchema } from "../../../../lib/schema";
+import { useSession } from "next-auth/react";
 
 export default function NewCardPage() {
+  const { data: session } = useSession();
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   const [formData, setFormData] = useState({
     name: "",
     image: "",

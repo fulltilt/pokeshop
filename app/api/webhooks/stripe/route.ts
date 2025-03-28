@@ -10,6 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
+  console.log(req);
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
 
@@ -27,8 +28,9 @@ export async function POST(req: Request) {
   // if (event.type === 'payment_intent.succeeded')
   // if (event.type === 'payment_intent.payment_failed')
   if (event.type === "checkout.session.completed") {
+    console.log(body);
     const session = event.data.object as Stripe.Checkout.Session;
-
+    console.log(session);
     // Update order status to PAID
     await prismaClient.order.update({
       where: { id: Number.parseInt(session.metadata!.orderId!) },

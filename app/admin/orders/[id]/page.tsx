@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,10 +28,16 @@ import {
 import { toast } from "sonner";
 import { orderSchema } from "../../../../lib/schema";
 import { z } from "zod";
+import { useSession } from "next-auth/react";
 
 type OrderSchema = z.infer<typeof orderSchema>;
 
 function AdminOrderDetailPage() {
+  const { data: session } = useSession();
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   const params = useParams();
   const router = useRouter();
   const [order, setOrder] = useState<OrderSchema>();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Minus, Plus } from "lucide-react";
@@ -18,19 +18,22 @@ export default function QuantityAdjuster({
   maxQuantity,
   onQuantityChange,
 }: QuantityAdjusterProps) {
+  // Use local state to track the quantity
   const [quantity, setQuantity] = useState(initialQuantity);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Update local state when initialQuantity prop changes
+  useEffect(() => {
+    setQuantity(initialQuantity);
+  }, [initialQuantity]);
 
   const updateQuantity = async (newQuantity: number) => {
     if (newQuantity < 1 || newQuantity > maxQuantity) return;
 
     // Update local state immediately for responsive UI
     setQuantity(newQuantity);
-
-    // Call the parent callback to update the UI
-    onQuantityChange(itemId, newQuantity);
-
     setIsLoading(true);
+
     try {
       const response = await fetch(`/api/cart/update-quantity`, {
         method: "POST",
@@ -44,12 +47,14 @@ export default function QuantityAdjuster({
         throw new Error("Failed to update quantity");
       }
 
-      // No need to update state again as we've already done it optimistically
+      // Call the parent callback AFTER successful API call
+      onQuantityChange(itemId, newQuantity);
+
+      // No need for toast on success to avoid too many notifications
     } catch (error) {
       console.error("Error updating quantity:", error);
       // Revert to previous quantity on error
       setQuantity(initialQuantity);
-      onQuantityChange(itemId, initialQuantity);
 
       toast.error("Failed to update quantity. Please try again.");
     } finally {

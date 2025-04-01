@@ -58,7 +58,7 @@ export default function CartPage() {
 
         // Create a new object to track loading state for each item
         const newLoadingItems: Record<number, boolean> = {};
-        cartItems.forEach((item) => {
+        cartItems.forEach((item: CartItemSchema) => {
           newLoadingItems[item.itemId] = true;
         });
         setLoadingItems(newLoadingItems);
@@ -69,7 +69,7 @@ export default function CartPage() {
 
           // Use Promise.all to fetch all items in parallel
           await Promise.all(
-            cartItems.map(async (item) => {
+            cartItems.map(async (item: CartItemSchema) => {
               try {
                 const response = await fetch(`/api/items/${item.itemId}`);
 
@@ -231,7 +231,6 @@ export default function CartPage() {
                             <Skeleton className="h-8 w-24" />
                           ) : (
                             <QuantityAdjuster
-                              key={`${item.id}-${item.quantity}`} // Add key with quantity to force re-render
                               itemId={item.itemId}
                               initialQuantity={item.quantity}
                               maxQuantity={itemDetails[item.itemId]?.quantity}

@@ -13,14 +13,17 @@ import { auth } from "@/lib/auth";
 export default async function ThankYouPage({
   searchParams,
 }: {
-  searchParams: { session_id: string };
+  searchParams: { stripeSessionId?: string; orderId?: string };
 }) {
-  const sessionId = searchParams.session_id;
+  const orderId = await searchParams.orderId;
   const session = await auth();
   const userId = session?.user?.id;
 
-  const order = await prismaClient.order.findFirst({
-    where: { userId: userId! },
+  const order = await prismaClient.order.findUnique({
+    where: {
+      id: Number(orderId),
+      userId: userId, // Ensure the order belongs to the current user
+    },
     include: { items: { include: { item: true } } },
   });
 

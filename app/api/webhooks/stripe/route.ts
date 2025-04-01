@@ -10,7 +10,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
-  console.log(req);
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
 
@@ -19,6 +18,7 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
   } catch (err: any) {
+    console.log("webhook error", err.message);
     return NextResponse.json(
       { error: `Webhook Error: ${err.message}` },
       { status: 400 }
@@ -28,9 +28,8 @@ export async function POST(req: Request) {
   // if (event.type === 'payment_intent.succeeded')
   // if (event.type === 'payment_intent.payment_failed')
   if (event.type === "checkout.session.completed") {
-    console.log(body);
     const session = event.data.object as Stripe.Checkout.Session;
-    console.log(session);
+
     // Update order status to PAID
     await prismaClient.order.update({
       where: { id: Number.parseInt(session.metadata!.orderId!) },
@@ -42,9 +41,16 @@ export async function POST(req: Request) {
       where: { id: Number.parseInt(session.metadata!.orderId!) },
       include: { items: true },
     });
-    console.log("asdfasdfdsa", order);
+    console.log("order", order);
 
     if (order) {
+      // Ensure the cart is cleared after successful payment
+      if (order.userId) {
+        await prismaClient.cartItem.deleteMany({
+          where: { cart: { userId: order.userId } },
+        });
+      }
+
       for (const item of order.items) {
         const res = await prismaClient.item.update({
           where: { id: item.itemId },

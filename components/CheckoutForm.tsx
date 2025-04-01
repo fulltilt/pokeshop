@@ -178,7 +178,7 @@ export default function CheckoutForm({
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : "Place Order"}
+            {isLoading ? "Processing..." : "Checkout with Stripe"}
           </Button>
         </CardFooter>
       </Card>

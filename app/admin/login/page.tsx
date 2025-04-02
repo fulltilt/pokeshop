@@ -27,18 +27,18 @@ export default function AdminLogin() {
     e.preventDefault();
     setIsLoading(true);
 
-    const result = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    // const result = await signIn("credentials", {
+    //   redirect: false,
+    //   email,
+    //   password,
+    // });
 
-    if (result?.error) {
-      toast.error("Invalid admin credentials");
-      setIsLoading(false);
-    } else {
-      router.push("/admin/dashboard");
-    }
+    // if (result?.error) {
+    //   toast.error("Invalid admin credentials");
+    //   setIsLoading(false);
+    // } else {
+    //   router.push("/admin/dashboard");
+    // }
   };
 
   return (

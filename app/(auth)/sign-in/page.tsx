@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -63,6 +64,14 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+            </div>
+            <div className="text-sm text-right mt-2">
+              <Link
+                href="/forgot-password"
+                className="text-primary hover:underline"
+              >
+                Forgot password?
+              </Link>
             </div>
           </CardContent>
           <CardFooter>

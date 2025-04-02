@@ -20,18 +20,27 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
-
   accounts      Account[]
   sessions      Session[]
   role          UserRole @default(CUSTOMER)
   orders        Order[]
   cart      Cart?
+  resetToken PasswordResetToken?
 
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    String      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 model Account {
   userId            String

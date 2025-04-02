@@ -8,7 +8,7 @@ import { auth } from "../../lib/auth";
 export default async function ProfilePage() {
   const session = await auth();
   if (!session || !session.user) {
-    redirect("/login");
+    redirect("/sign-in");
   }
 
   const user = await prismaClient.user.findUnique({

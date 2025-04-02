@@ -104,7 +104,7 @@ export async function middleware(request: NextRequest) {
   // Handle authentication based on what we've determined
   if (!isAuthenticated) {
     console.log("No valid token found, redirecting to login");
-    const url = new URL("/login", request.url);
+    const url = new URL("/sign-in", request.url);
     url.searchParams.set("callbackUrl", encodeURI(request.url));
     return NextResponse.redirect(url);
   }

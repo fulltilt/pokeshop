@@ -147,7 +147,7 @@ describe("AddToCartButton Component", () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith("/login");
+      expect(mockRouterPush).toHaveBeenCalledWith("/sign-in");
     });
   });
 });

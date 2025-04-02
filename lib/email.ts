@@ -47,3 +47,31 @@ export async function sendOrderConfirmationEmail(
     console.error("Error sending order confirmation email:", error);
   }
 }
+
+export async function sendPasswordResetEmail(to: string, resetLink: string) {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: to,
+    subject: "DJCollects Password Reset Email",
+    html: `<p>Hello,</p>
+    
+    <p>You recently requested to reset your password for your Pokémon Singles Shop account.</p>
+    <p>Click the link below to reset it:</p>
+    
+    <p>${resetLink}</p>
+    
+    <p>This link will expire in 1 hour.</p>
+    
+    <p>If you did not request a password reset, please ignore this email or contact support if you have questions.</p>
+    
+    <p>Thank you,</p>
+    <p>DJCollects</p>`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Password reset email sent successfully");
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+  }
+}

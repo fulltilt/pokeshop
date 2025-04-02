@@ -6,14 +6,9 @@ import CheckoutForm from "@/components/CheckoutForm";
 import { auth } from "@/lib/auth";
 
 export default async function CheckoutPage() {
-  // const session = await getServerSession(authOptions)
-
-  // if (!session || !session.user) {
-  //   redirect("/login")
-  // }
   const session = await auth();
   if (!session || !session.user) {
-    redirect("/login");
+    redirect("/sign-in");
   }
 
   const userId = session?.user?.id;

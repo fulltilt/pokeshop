@@ -17,32 +17,6 @@ export async function POST(req: Request) {
 
       const userId = session?.user?.id;
 
-      // Create Stripe checkout session
-      const stripeSession = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: items.map((item: any) => ({
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: item.item.name,
-            },
-            unit_amount: Math.round(item.item.price * 100), // Stripe expects amounts in cents
-          },
-          quantity: item.quantity,
-        })),
-        mode: "payment",
-        success_url: `${req.headers.get(
-          "origin"
-        )}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.get("origin")}/checkout`,
-        customer_email: customer.email,
-        metadata: {
-          // orderId: order.id.toString(),
-          testMetadata: "true",
-        },
-      });
-      console.log("stripeSession", stripeSession);
-
       // Create order in database
       const order = await prismaClient.order.create({
         data: {
@@ -56,7 +30,6 @@ export async function POST(req: Request) {
           city: customer.city,
           country: customer.country,
           zipCode: customer.zipCode,
-          // stripeSessionId: stripeSession.id,
           total: items.reduce(
             (total: number, item: any) =>
               total + item.item.price * item.quantity,
@@ -75,7 +48,31 @@ export async function POST(req: Request) {
           items: true,
         },
       });
-      console.log("order", order);
+
+      // Create Stripe checkout session
+      const stripeSession = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: items.map((item: any) => ({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.item.name,
+            },
+            unit_amount: Math.round(item.item.price * 100), // Stripe expects amounts in cents
+          },
+          quantity: item.quantity,
+        })),
+        mode: "payment",
+        success_url: `${req.headers.get(
+          "origin"
+        )}/thank-you?stripeSessionId={CHECKOUT_SESSION_ID}&orderId=${order.id}`,
+        cancel_url: `${req.headers.get("origin")}/checkout`,
+        customer_email: customer.email,
+        metadata: {
+          orderId: order.id.toString(),
+          testMetadata: "true",
+        },
+      });
 
       return NextResponse.json({
         stripeSessionId: stripeSession.id,

@@ -203,7 +203,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link
-                  href="/login"
+                  href="/sign-in"
                   className="flex items-center gap-2 p-2 hover:bg-muted rounded-md"
                   onClick={closeMenu}
                 >

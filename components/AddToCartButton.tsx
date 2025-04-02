@@ -23,7 +23,7 @@ export default function AddToCartButton({ item }: { item: ItemSchema }) {
   const addToCart = async () => {
     if (!session?.user) {
       toast.error("You need to be logged in to add items to your cart.");
-      router.push("/login");
+      router.push("/sign-in");
       return;
     }
 

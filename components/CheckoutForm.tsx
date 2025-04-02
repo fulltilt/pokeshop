@@ -65,12 +65,14 @@ export default function CheckoutForm({
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
-      const { sessionId } = await response.json();
+      // console.log(await response.json());
+      const { stripeSessionId } = await response.json();
 
       // Redirect to Stripe Checkout
       const stripe = await getStripe();
-      const { error } = await stripe!.redirectToCheckout({ sessionId });
+      const { error } = await stripe!.redirectToCheckout({
+        sessionId: stripeSessionId,
+      });
 
       if (error) {
         toast.error(error.message);
@@ -153,6 +155,9 @@ export default function CheckoutForm({
               name="zipCode"
               value={formData.zipCode}
               onChange={handleInputChange}
+              type="number"
+              minLength={5}
+              maxLength={5}
               required
             />
           </div>

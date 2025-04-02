@@ -18,7 +18,7 @@ export default async function ThankYouPage({
   const orderId = await searchParams.orderId;
   const session = await auth();
   const userId = session?.user?.id;
-
+  console.log(orderId);
   const order = await prismaClient.order.findUnique({
     where: {
       id: Number(orderId),

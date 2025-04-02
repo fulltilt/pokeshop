@@ -35,7 +35,7 @@ export default function CartPage() {
   // Redirect if not logged in
   useEffect(() => {
     if (session === null) {
-      router.push("/login");
+      router.push("/sign-in");
     }
   }, [session, router]);
 

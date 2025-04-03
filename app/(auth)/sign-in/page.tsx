@@ -15,14 +15,38 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, AlertTriangle, Lock } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockExpiry, setLockExpiry] = useState<Date | null>(null);
   const router = useRouter();
+
+  // Format the remaining time until unlock
+  const formatRemainingTime = (expiryDate: Date) => {
+    const now = new Date();
+    const diffMs = expiryDate.getTime() - now.getTime();
+
+    if (diffMs <= 0) return "now";
+
+    const diffMins = Math.ceil(diffMs / 60000);
+    if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? "s" : ""}`;
+
+    const hours = Math.floor(diffMins / 60);
+    const mins = diffMins % 60;
+    return `${hours} hour${hours !== 1 ? "s" : ""} and ${mins} minute${
+      mins !== 1 ? "s" : ""
+    }`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const result = await signIn("credentials", {
       redirect: false,
@@ -30,8 +54,18 @@ export default function LoginPage() {
       password,
     });
 
+    setIsLoading(false);
+
     if (result?.error) {
-      toast.error(result.error);
+      // Check if the error is about account locking
+      if (
+        result.error.includes("Account is locked") ||
+        result.error.includes("Too many failed login attempts")
+      ) {
+        toast.error(result.error);
+      } else {
+        toast.error("Invalid email or password");
+      }
     } else {
       router.push("/");
     }

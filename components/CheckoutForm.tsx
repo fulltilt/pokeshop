@@ -65,7 +65,7 @@ export default function CheckoutForm({
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      // console.log(await response.json());
+
       const { stripeSessionId } = await response.json();
 
       // Redirect to Stripe Checkout

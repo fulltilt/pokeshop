@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
   } catch (err: any) {
-    console.log("webhook error", err.message);
+    console.log("---webhook error---", err.message);
     return NextResponse.json(
       { error: `Webhook Error: ${err.message}` },
       { status: 400 }
@@ -41,7 +41,6 @@ export async function POST(req: Request) {
       where: { id: Number.parseInt(session.metadata!.orderId!) },
       include: { items: true },
     });
-    console.log("order", order);
 
     if (order) {
       // Ensure the cart is cleared after successful payment

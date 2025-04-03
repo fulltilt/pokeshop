@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-// import { getServerSession } from "next-auth/next"
-// import { authOptions } from "@/lib/auth"
 import { prismaClient } from "@/db";
 import { auth } from "@/lib/auth";
 
@@ -15,6 +13,22 @@ export async function POST(req: Request) {
 
   try {
     const userId = session.user.id!;
+
+    // Check if the item exists and has enough stock
+    const item = await prismaClient.item.findUnique({
+      where: { id: itemId },
+    });
+
+    if (!item) {
+      return NextResponse.json({ error: "Card not found" }, { status: 404 });
+    }
+
+    if (item.quantity <= 0) {
+      return NextResponse.json(
+        { error: "Item is out of stock" },
+        { status: 400 }
+      );
+    }
 
     // Get or create the user's cart
     let cart = await prismaClient.cart.findUnique({
@@ -32,11 +46,28 @@ export async function POST(req: Request) {
     // Check if the item is already in the cart
     const existingItem = cart?.items.find((item) => item.itemId === itemId);
 
+    // Calculate the new quantity (existing + requested)
+    const newQuantity = existingItem
+      ? existingItem.quantity + quantity
+      : quantity;
+
+    // Check if the new quantity exceeds available stock
+    if (newQuantity > item.quantity) {
+      return NextResponse.json(
+        {
+          error: "Not enough stock available",
+          availableStock: item.quantity,
+          currentCartQuantity: existingItem ? existingItem.quantity : 0,
+        },
+        { status: 400 }
+      );
+    }
+
     if (existingItem) {
       // Update the quantity if the item already exists
       await prismaClient.cartItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + quantity },
+        data: { quantity: newQuantity },
       });
     } else {
       // Add a new item to the cart

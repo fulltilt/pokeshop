@@ -11,6 +11,11 @@ import { loginSchema } from "./schema";
 
 const adapter = PrismaAdapter(db);
 
+// Define the maximum number of login attempts before locking
+const MAX_LOGIN_ATTEMPTS = 5;
+// Define the lock duration in minutes
+const LOCK_DURATION_MINUTES = 1;
+
 export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
   adapter,
   providers: [
@@ -37,14 +42,64 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
           throw new Error("Invalid credentials.");
         }
 
+        // Check if account is locked
+        if (user.lockedUntil && new Date() < user.lockedUntil) {
+          console.log("Account is locked until:", user.lockedUntil);
+          throw new Error(
+            `Account is locked. Please try again after ${user.lockedUntil.toLocaleString()}`
+          );
+        }
+
         const isPasswordValid = await bcrypt.compare(
           validatedCredentials.password,
           user.password!
         );
 
         if (!isPasswordValid) {
+          console.log("Invalid password for user:", credentials.email);
+
+          // Increment login attempts
+          const updatedAttempts = user.loginAttempts + 1;
+
+          // Check if we should lock the account
+          if (updatedAttempts >= MAX_LOGIN_ATTEMPTS) {
+            const lockUntil = new Date(
+              Date.now() + LOCK_DURATION_MINUTES * 60 * 1000
+            );
+
+            await prismaClient.user.update({
+              where: { id: user.id },
+              data: {
+                loginAttempts: 0, // Reset attempts
+                lockedUntil: lockUntil, // Lock the account
+              },
+            });
+
+            throw new Error(
+              `Too many failed login attempts. Account locked for ${LOCK_DURATION_MINUTES} minutes.`
+            );
+          } else {
+            // Just increment the attempts
+            await prismaClient.user.update({
+              where: { id: user.id },
+              data: { loginAttempts: updatedAttempts },
+            });
+          }
           return null;
         }
+
+        // Reset login attempts on successful login
+        await prismaClient.user.update({
+          where: { id: user.id },
+          data: {
+            loginAttempts: 0,
+            lockedUntil: null,
+          },
+        });
+
+        console.log(
+          `User authenticated successfully: ${user.email}, Role: ${user.role}`
+        );
 
         return {
           id: user.id.toString(),
@@ -60,10 +115,10 @@ export const { auth, handlers, signIn }: NextAuthResult = NextAuth({
       if (account?.provider === "credentials") {
         token.credentials = true;
         token.id = user.id;
-        token.role = user.role;
+        // token.role = user.role;
 
         // For debugging
-        console.log("JWT callback - user role:", user.role);
+        // console.log("JWT callback - user role:", user.role);
       }
       return token;
     },

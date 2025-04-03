@@ -34,14 +34,23 @@ export default async function Home() {
               <CardHeader className="min-h-[3rem]">
                 <CardTitle>{item.name}</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-grow flex items-center justify-center relative">
                 <Image
                   src={imageUrl || "/placeholder.svg"}
                   alt={item.name}
                   width={200}
                   height={300}
-                  className="mx-auto"
+                  className={`max-w-full h-auto ${
+                    item.quantity === 0 ? "opacity-60" : ""
+                  }`}
                 />
+                {item.quantity === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-red-500 text-white px-3 py-1 rounded-md font-bold transform rotate-45">
+                      SOLD OUT
+                    </span>
+                  </div>
+                )}
               </CardContent>
               <CardFooter className="flex justify-between">
                 <span className="text-lg font-bold">

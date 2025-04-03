@@ -1,34 +1,3 @@
-// import { NextResponse } from "next/server";
-// import type { NextRequest } from "next/server";
-// import { getToken } from "next-auth/jwt";
-
-// export async function middleware(request: NextRequest) {
-//   const token = await getToken({
-//     req: request,
-//     secret: process.env.AUTH_SECRET,
-//   });
-//   console.log("token", token);
-//   if (!token) {
-//     const url = new URL("/sign-in", request.url);
-//     url.searchParams.set("callbackUrl", encodeURI(request.url));
-//     return NextResponse.redirect(url);
-//   }
-
-//   if (request.nextUrl.pathname.startsWith("/admin")) {
-//     // Check if the user has the ADMIN role
-//     if (token.role !== "ADMIN") {
-//       // Redirect non-admin users to the home page
-//       return NextResponse.redirect(new URL("/", request.url));
-//     }
-//   }
-
-//   return NextResponse.next();
-// }
-
-// export const config = {
-//   matcher: ["/profile", "/admin/:path*", "/checkout"],
-// };
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";

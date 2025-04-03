@@ -27,6 +27,19 @@ export default function AddToCartButton({ item }: { item: ItemSchema }) {
       return;
     }
 
+    // Check if item is in stock
+    if (item.quantity <= 0) {
+      toast.error("This item is currently out of stock.");
+      return;
+    }
+
+    // Check if requested quantity is available
+    if (quantity > item.quantity) {
+      toast.error(`Only ${item.quantity} items available.`);
+      setQuantity(item.quantity);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch("/api/cart/add", {
@@ -65,7 +78,10 @@ export default function AddToCartButton({ item }: { item: ItemSchema }) {
         min="1"
         max={item.quantity}
         value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
+        onChange={(e) => {
+          const val = Number(e.target.value);
+          setQuantity(val > item.quantity ? item.quantity : val);
+        }}
         className="w-20"
       />
       <Button onClick={addToCart} disabled={isLoading}>

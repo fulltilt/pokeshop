@@ -11,14 +11,12 @@ const executeAction = async <T>({
 }: Options<T>): Promise<{ success: boolean; message: string }> => {
   try {
     const res = await actionFn();
-    console.log("asdvsd", res);
 
     return {
       success: true,
       message: successMessage,
     };
   } catch (error) {
-    console.log("asfddsa", error);
     if (isRedirectError(error)) {
       throw error;
     }

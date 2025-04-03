@@ -10,6 +10,7 @@ import {
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
 import { getImage } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export default async function CardDetailsPage({
   params,
@@ -34,13 +35,22 @@ export default async function CardDetailsPage({
           <CardTitle className="text-3xl">{item.name}</CardTitle>
         </CardHeader>
         <CardContent className="gap-4 overflow-y-auto">
-          <img
-            src={imageUrl || "/placeholder.svg"}
-            alt={item.name}
-            width={300}
-            height={450}
-            className="mx-auto"
-          />
+          <div className="relative">
+            <img
+              src={imageUrl || "/placeholder.svg"}
+              alt={item.name}
+              width={300}
+              height={450}
+              className={`mx-auto ${item.quantity === 0 ? "opacity-60" : ""}`}
+            />
+            {item.quantity === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="bg-red-500 text-white px-4 py-2 rounded-md font-bold text-xl transform rotate-45">
+                  SOLD OUT
+                </span>
+              </div>
+            )}
+          </div>
           <p className="text-lg mt-4 mb-4">{item.description}</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -50,7 +60,11 @@ export default async function CardDetailsPage({
         </CardContent>
         <CardFooter className="flex justify-between items-center">
           <span className="text-2xl font-bold">${item.price.toFixed(2)}</span>
-          <AddToCartButton item={item} />
+          {item.quantity > 0 ? (
+            <AddToCartButton item={item} />
+          ) : (
+            <Button disabled>Out of Stock</Button>
+          )}
         </CardFooter>
       </Card>
     </div>

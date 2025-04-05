@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
 import { hash } from "bcrypt";
+import { auth } from "@/lib/auth";
 
 export async function POST(req: Request) {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { token, password } = await req.json();
 

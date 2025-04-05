@@ -1,10 +1,17 @@
 import { prismaClient } from "@/db";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const id = Number.parseInt((await params).id);
 
   const order = await prismaClient.order.findUnique({

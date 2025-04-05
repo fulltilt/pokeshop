@@ -7,12 +7,12 @@ import { auth } from "@/lib/auth";
 export async function GET(req: Request) {
   const session = await auth();
 
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const userId = session?.user?.id;
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     // Get the user's cart
     const cart = await prismaClient.cart.findUnique({

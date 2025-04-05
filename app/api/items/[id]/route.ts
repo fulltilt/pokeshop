@@ -23,6 +23,12 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const session = await auth();
+
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const data = await request.json();
@@ -90,12 +96,6 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  // const session = await getServerSession(authOptions)
-
-  // // Check if user is authenticated and is an admin
-  // if (!session || !session.user || session.user.role !== "ADMIN") {
-  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  // }
   const session = await auth();
 
   if (!session || !session.user || session.user.role !== "ADMIN") {

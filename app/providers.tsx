@@ -2,6 +2,7 @@
 import { CartProvider } from "@/components/CartProvider";
 import Navbar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
+import Link from "next/link";
 import { Toaster } from "sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -13,10 +14,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <main className="flex-grow container mx-auto px-4 py-8">
           {children}
         </main>
-        <footer className="bg-muted text-muted-foreground p-4 mt-auto">
-          <div className="container mx-auto text-center">
-            © 2025 DJCollects. All rights reserved.
-          </div>
+        <footer className="flex gap-8 justify-center bg-muted text-muted-foreground p-4 mt-auto">
+          + <div className=" ">© 2025 DJCollects. All rights reserved.</div>+{" "}
+          <Link href="return-policy">Return Policy</Link>+{" "}
+          <Link href="privacy-policy">Privacy Policy</Link>
         </footer>
         <Toaster />
       </CartProvider>

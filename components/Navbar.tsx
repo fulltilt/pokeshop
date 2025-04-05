@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SearchBar } from "./SearchBar";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -55,6 +56,8 @@ export default function Navbar() {
             <Package className="h-4 w-4" />
             <span>All Items</span>
           </Link>
+
+          <SearchBar />
 
           {session?.user && (
             <>
@@ -134,6 +137,8 @@ export default function Navbar() {
               )}
             </Link>
           )}
+
+          <SearchBar />
 
           <Button variant="ghost" size="icon" onClick={toggleMenu}>
             {isMenuOpen ? (

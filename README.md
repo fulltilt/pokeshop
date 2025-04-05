@@ -47,3 +47,7 @@ TODO
 {
 "presets": ["next/babel"]
 }
+
+-infinite scrolling
+-placeholder image
+-search feature

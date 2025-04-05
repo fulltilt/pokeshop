@@ -76,6 +76,7 @@ export function SearchBar() {
           `/api/items?search=${encodeURIComponent(debouncedQuery)}&limit=5`
         );
         const data = await response.json();
+
         setResults(data.items || []);
       } catch (error) {
         console.error("Error fetching search results:", error);

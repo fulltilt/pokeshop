@@ -12,12 +12,19 @@ import Image from "next/image";
 import { auth } from "../lib/auth";
 import { redirect } from "next/navigation";
 import { getImage } from "@/lib/utils";
+import { ItemSchema } from "@/components/AddToCartButton";
 
 export default async function Home() {
   const session = await auth();
   if (!session) redirect("/sign-in");
 
-  const items = await prismaClient.item.findMany();
+  // const items = await prismaClient.item.findMany();
+  // const items = await prismaClient.item.findMany({ take: 3 });
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch items");
+  }
+  const items = (await response.json()).items;
 
   return (
     <div className="space-y-8">
@@ -26,17 +33,15 @@ export default async function Home() {
         Find the perfect individual Pokémon product for your collection!
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 m-12">
-        {items.map(async (item) => {
-          const imageUrl = await getImage(item.image);
-
+        {items.map(async (item: ItemSchema) => {
           return (
             <Card key={item.id}>
               <CardHeader className="min-h-[3rem]">
                 <CardTitle>{item.name}</CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow flex items-center justify-center relative">
+              <CardContent className="flex-grow flex items-center justify-center relative min-h-[300px]">
                 <Image
-                  src={imageUrl || "/placeholder.svg"}
+                  src={item.image || "/placeholder.svg"}
                   alt={item.name}
                   width={200}
                   height={300}

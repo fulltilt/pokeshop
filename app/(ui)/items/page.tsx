@@ -9,14 +9,16 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { ItemSchema } from "@/components/AddToCartButton";
+import { getItems } from "@/app/api/items/route";
 
 export default async function ItemsPage() {
-  // const items = await prismaClient.item.findMany();
-  const response = await fetch(`${process.env.VERCEL_URL}/api/items`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch items");
-  }
-  const items = (await response.json()).items;
+  const data = await getItems({
+    page: 1,
+    limit: 10,
+    search: "",
+    category: "",
+  });
+  const items = data.items;
 
   return (
     <div className="gap-8">

@@ -3,14 +3,14 @@ import { prismaClient } from "@/db";
 import { ItemSchema } from "@/components/AddToCartButton";
 import { getImage } from "@/lib/utils";
 
-export async function GET(request: Request) {
-  // Get query parameters
-  const url = new URL(request.url);
-  const page = Number.parseInt(url.searchParams.get("page") || "1");
-  const limit = Number.parseInt(url.searchParams.get("limit") || "10");
-  const search = url.searchParams.get("search") || undefined;
-  const category = url.searchParams.get("category") || undefined;
+type Params = { page: number; limit: number; search: string; category: string };
 
+export async function getItems({
+  page = 1,
+  limit = 10,
+  search = "",
+  category = "",
+}: Params) {
   // Calculate pagination
   const skip = (page - 1) * limit;
 
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
     const hasMore = page < totalPages;
 
     // Return the items with pagination metadata
-    return NextResponse.json({
+    return {
       items,
       pagination: {
         page,
@@ -78,12 +78,39 @@ export async function GET(request: Request) {
         totalPages,
         hasMore,
       },
-    });
+    };
   } catch (error) {
     console.error("Error fetching items:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch items" },
-      { status: 500 }
-    );
+    return { error: "Failed to fetch items", status: 500 };
   }
 }
+
+// export async function GET() {
+//   // Get query parameters
+//   // const url = new URL(request.url);
+//   // const page = Number.parseInt(url.searchParams.get("page") || "1");
+//   // const limit = Number.parseInt(url.searchParams.get("limit") || "10");
+//   // const search = url.searchParams.get("search") || undefined;
+//   // const category = url.searchParams.get("category") || undefined;
+
+//   try {
+//     const data = await getItems()
+
+//     return NextResponse.json({
+//     items,
+//     pagination: {
+//       page,
+//       limit,
+//       totalCount,
+//       totalPages,
+//       hasMore,
+//     },
+//   });
+// } catch (error) {
+//   console.error("Error fetching items:", error);
+//   return NextResponse.json(
+//     { error: "Failed to fetch items" },
+//     { status: 500 }
+//   );
+// }}
+// }

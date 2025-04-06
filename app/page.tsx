@@ -9,14 +9,16 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { ItemSchema } from "@/components/AddToCartButton";
+import { getItems } from "./api/items/route";
 
 export default async function Home() {
-  // const items = await prismaClient.item.findMany({ take: 3 });
-  const response = await fetch(`${process.env.VERCEL_URL}/api/items`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch items");
-  }
-  const items = (await response.json()).items;
+  const data = await getItems({
+    page: 1,
+    limit: 10,
+    search: "",
+    category: "",
+  });
+  const items = data.items;
 
   return (
     <div className="space-y-8">
@@ -25,7 +27,7 @@ export default async function Home() {
         Find the perfect individual Pokémon product for your collection!
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 m-12">
-        {items.map(async (item: ItemSchema) => {
+        {items!.map(async (item: ItemSchema) => {
           return (
             <Card key={item.id}>
               <CardHeader className="min-h-[3rem]">

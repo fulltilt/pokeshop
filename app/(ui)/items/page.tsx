@@ -24,7 +24,7 @@ export default async function ItemsPage() {
     <div className="gap-8">
       <h2 className="text-3xl font-bold text-center mb-8">All Items</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {items.map(async (item: ItemSchema) => {
+        {items!.map(async (item: ItemSchema) => {
           return (
             <Card key={item.id}>
               <CardHeader className="min-h-[3rem]">

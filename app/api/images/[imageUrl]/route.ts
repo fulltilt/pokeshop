@@ -14,6 +14,22 @@ const s3 = new S3Client({
   region: process.env.AWS_REGION,
 });
 
+export async function getS3ImageUrl(imageUrl: string) {
+  try {
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: imageUrl,
+    });
+
+    const url = await getSignedUrl(s3, command);
+
+    return url;
+  } catch (error) {
+    console.error("Error fetching image from S3:", error);
+    return "Error fetching image from S3";
+  }
+}
+
 export async function GET(
   request: Request,
   { params }: { params: { imageUrl: string } }

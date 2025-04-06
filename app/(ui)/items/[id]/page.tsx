@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
-import { getImage } from "@/lib/utils";
+import { getS3ImageUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export default async function CardDetailsPage({
@@ -26,7 +26,7 @@ export default async function CardDetailsPage({
     notFound();
   }
 
-  const imageUrl = await getImage(item.image);
+  const imageUrl = await getS3ImageUrl(item.image);
 
   return (
     <div className="max-w-2xl mx-auto flex">

@@ -15,7 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DeleteItemButton from "@/components/DeleteItemButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getImage } from "@/lib/utils";
+import { getS3ImageUrl } from "@/app/api/images/[imageUrl]/route";
 import { z } from "zod";
 import { cartItemSchema } from "@/lib/schema";
 import { useCart } from "@/components/CartProvider";
@@ -81,7 +81,7 @@ export default function CartPage() {
 
                 const data = await response.json();
 
-                const imageUrl = await getImage(data.image);
+                const imageUrl = await getS3ImageUrl(data.image);
                 data.image = imageUrl;
                 details[item.itemId] = data;
               } catch (error) {

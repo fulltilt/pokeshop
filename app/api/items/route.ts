@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
 import { ItemSchema } from "@/components/AddToCartButton";
-import { getImage } from "@/lib/utils";
+import { getS3ImageUrl } from "../images/[imageUrl]/route";
 
 type Params = { page: number; limit: number; search: string; category: string };
 
@@ -55,7 +55,7 @@ export async function getItems({
 
     const items = await Promise.all(
       data.map(async (item: ItemSchema) => {
-        const imageUrl = await getImage(item.image);
+        const imageUrl = await getS3ImageUrl(item.image);
 
         return {
           ...item,

@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "./CartProvider";
-import { useSession } from "next-auth/react";
 import {
   ShoppingCart,
   Menu,
@@ -28,14 +27,18 @@ import {
 import { SearchBar } from "./SearchBar";
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { cartItemsCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
+  const isLoading = status === "loading";
+  const isAuthenticated = status === "authenticated";
+  const isAdmin = session?.user?.role === "ADMIN";
+
   return (
-    // <header className="sticky top-0 z-50 bg-background border-b border-border p-4">
     <header className="bg-primary text-primary-foreground p-4 sticky top-0 z-50 border-b border-border">
       <nav className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-xl md:text-2xl font-bold">
@@ -59,18 +62,24 @@ export default function Navbar() {
 
           <SearchBar />
 
-          {session?.user && (
-            <>
-              {session?.user?.role === "ADMIN" && (
-                <Link
-                  href="/admin/dashboard"
-                  className="hover:underline flex items-center gap-1"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Admin</span>
-                </Link>
-              )}
+          {/* Admin Link - Reserve space even when loading */}
+          <div className="w-[76px]">
+            {" "}
+            {/* Approximate width of Admin link */}
+            {isAdmin && (
+              <Link
+                href="/admin/dashboard"
+                className="hover:underline flex items-center gap-1"
+              >
+                <Settings className="h-4 w-4" />
+                <span>Admin</span>
+              </Link>
+            )}
+          </div>
 
+          {/* Cart Icon - Always render to maintain layout */}
+          <div className="relative">
+            {(isAuthenticated || isLoading) && (
               <Link href="/cart" className="hover:underline relative">
                 <ShoppingCart className="h-6 w-6" />
                 {cartItemsCount > 0 && (
@@ -83,21 +92,26 @@ export default function Navbar() {
                   </span>
                 )}
               </Link>
+            )}
+          </div>
 
+          {/* User Menu or Auth Links - Always render with consistent width */}
+          <div className="min-w-[100px] flex justify-end">
+            {isLoading ? (
+              <div className="w-5 h-5 rounded-full animate-pulse bg-primary-foreground/30"></div>
+            ) : isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  {/* <Button variant="ghost" size="icon" className="rounded-full"> */}
                   <div className="cursor-pointer rounded-full border-solid border-1 border-white">
                     <User className="h-5 w-5" />
                   </div>
-                  {/* </Button> */}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>
                     {session?.user?.name || session?.user?.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link href="/profile" className="cursor-pointer w-full">
                       Profile
                     </Link>
@@ -112,33 +126,34 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </>
-          )}
-
-          {session === null && (
-            <>
-              <Link href="/sign-in" className="hover:underline">
-                Login
-              </Link>
-              <Link href="/sign-up" className="hover:underline">
-                Register
-              </Link>
-            </>
-          )}
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link href="/sign-in" className="hover:underline">
+                  Login
+                </Link>
+                <Link href="/sign-up" className="hover:underline">
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mobile Navigation */}
         <div className="flex items-center space-x-2 md:hidden gap-2">
-          {session?.user && (
-            <Link href="/cart" className="hover:underline relative mr-2">
-              <ShoppingCart className="h-6 w-6" />
-              {cartItemsCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItemsCount}
-                </span>
-              )}
-            </Link>
-          )}
+          {/* Cart Icon - Always render with consistent width for mobile */}
+          <div className="w-6 relative">
+            {(isAuthenticated || isLoading) && (
+              <Link href="/cart" className="hover:underline relative mr-2">
+                <ShoppingCart className="h-6 w-6" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </Link>
+            )}
+          </div>
 
           <SearchBar />
 
@@ -174,9 +189,13 @@ export default function Navbar() {
               <span>All Items</span>
             </Link>
 
-            {session?.user ? (
+            {isLoading ? (
+              <div className="p-2">
+                <div className="h-5 w-32 bg-primary-foreground/30 animate-pulse rounded"></div>
+              </div>
+            ) : isAuthenticated ? (
               <>
-                {session?.user?.role === "ADMIN" && (
+                {isAdmin && (
                   <Link
                     href="/admin/dashboard"
                     className="flex items-center gap-2 p-2 hover:bg-muted rounded-md"
@@ -219,7 +238,7 @@ export default function Navbar() {
                 </Link>
 
                 <Link
-                  href="/register"
+                  href="/sign-up"
                   className="flex items-center gap-2 p-2 hover:bg-muted rounded-md"
                   onClick={closeMenu}
                 >

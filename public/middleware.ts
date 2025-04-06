@@ -92,3 +92,54 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/profile", "/admin/:path*", "/checkout"],
 };
+
+// import { NextResponse } from "next/server"
+// import type { NextRequest } from "next/server"
+// import { getToken } from "next-auth/jwt"
+
+// export async function middleware(request: NextRequest) {
+//   // Get the pathname
+//   const path = request.nextUrl.pathname
+
+//   // Try to get the token
+//   const token = await getToken({
+//     req: request,
+//     secret: process.env.NEXTAUTH_SECRET,
+//   })
+
+//   // Check if the user is authenticated
+//   const isAuthenticated = !!token
+
+//   // Check if the user is an admin
+//   const isAdmin = token?.role === "ADMIN"
+
+//   // Handle authentication for protected routes
+//   if (path.startsWith("/profile") || path.startsWith("/checkout")) {
+//     if (!isAuthenticated) {
+//       const url = new URL("/login", request.url)
+//       url.searchParams.set("callbackUrl", encodeURI(request.url))
+//       return NextResponse.redirect(url)
+//     }
+//   }
+
+//   // Handle admin routes
+//   if (path.startsWith("/admin")) {
+//     // Always check authentication first
+//     if (!isAuthenticated) {
+//       const url = new URL("/login", request.url)
+//       url.searchParams.set("callbackUrl", encodeURI(request.url))
+//       return NextResponse.redirect(url)
+//     }
+
+//     // Then check admin role
+//     if (!isAdmin) {
+//       return NextResponse.redirect(new URL("/", request.url))
+//     }
+//   }
+
+//   return NextResponse.next()
+// }
+
+// export const config = {
+//   matcher: ["/profile/:path*", "/admin/:path*", "/checkout/:path*"],
+// }

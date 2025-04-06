@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,9 +44,7 @@ type UserData = {
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
   const { data: session } = useSession();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -57,7 +55,16 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
+
+  useEffect(() => {
+    // Wait until session is loaded
+    if (status === "loading") return;
+
+    // Redirect if not admin
+    if (!session || session!.user!.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
 
   useEffect(() => {
     const fetchUser = async () => {

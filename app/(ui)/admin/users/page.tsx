@@ -34,7 +34,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: number;
@@ -53,10 +53,8 @@ type PaginationData = {
 };
 
 export default function ManageUsers() {
-  const { data: session } = useSession();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +68,16 @@ export default function ManageUsers() {
   });
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    // Wait until session is loaded
+    if (status === "loading") return;
+
+    // Redirect if not admin
+    if (!session || session!.user!.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
 
   const fetchUsers = async (page = 1, search = searchTerm) => {
     setIsLoading(true);

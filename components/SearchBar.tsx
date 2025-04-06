@@ -176,7 +176,6 @@ export function SearchBar() {
               {debouncedQuery && results.length > 0 ? (
                 <CommandGroup heading="Items">
                   {results.map((item) => {
-                    // console.log(item);
                     return (
                       <CommandItem
                         key={item.id}

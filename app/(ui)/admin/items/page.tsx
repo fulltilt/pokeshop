@@ -15,13 +15,44 @@ import DeleteItemButton from "@/components/DeleteItemButton";
 import { useEffect, useState } from "react";
 import { ItemSchema } from "@/components/AddToCartButton";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function ManageItems() {
-  const { data: session } = useSession();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [items, setItems] = useState<ItemSchema[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Wait until session is loaded
+    if (status === "loading") return;
+
+    // Redirect if not admin
+    if (!session || session!.user!.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
+
+  const fetchItems = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/items");
+      if (!response.ok) {
+        throw new Error("Failed to fetch items");
+      }
+      const data = await response.json();
+      setItems(data.items);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      toast.error("Failed to load items. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   // let items = await prismaClient.item.findMany();
 
@@ -53,34 +84,14 @@ export default function ManageItems() {
   //   }
   // };
 
-  const [items, setItems] = useState<ItemSchema[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchItems = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/items");
-      if (!response.ok) {
-        throw new Error("Failed to fetch items");
-      }
-      const data = await response.json();
-      setItems(data.items);
-    } catch (error) {
-      console.error("Error fetching items:", error);
-      toast.error("Failed to load items. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  if (status === "loading") {
+    return <div>Loading...</div>; // Or a spinner
+  }
 
   const handleItemDeleted = async () => {
     fetchItems();
   };
-  console.log(items);
+
   return (
     <div className="container mx-auto p-4 gap-4">
       <h1 className="text-3xl font-bold">Manage Items</h1>

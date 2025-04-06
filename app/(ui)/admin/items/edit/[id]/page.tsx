@@ -19,10 +19,9 @@ import { itemSchema } from "@/lib/schema";
 import { useSession } from "next-auth/react";
 
 export default function EditItemPage({ params }: { params: { id: string } }) {
-  const { data: session } = useSession();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { id } = useParams();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,8 +32,16 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
-  const { id } = useParams();
+
+  useEffect(() => {
+    // Wait until session is loaded
+    if (status === "loading") return;
+
+    // Redirect if not admin
+    if (!session || session!.user!.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
 
   useEffect(() => {
     fetch(`/api/items/${id}`)

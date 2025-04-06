@@ -35,18 +35,24 @@ import { Input } from "@/components/ui/input";
 type OrderSchema = z.infer<typeof orderSchema>;
 
 function AdminOrderDetailPage() {
-  const { data: session } = useSession();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
-
+  const { data: session, status } = useSession();
   const params = useParams();
   const router = useRouter();
   const [order, setOrder] = useState<OrderSchema>();
-  const [status, setStatus] = useState(order?.status || "PENDING");
+  const [orderStatus, setOrderStatus] = useState(order?.status || "PENDING");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    // Wait until session is loaded
+    if (status === "loading") return;
+
+    // Redirect if not admin
+    if (!session || session!.user!.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -57,7 +63,7 @@ function AdminOrderDetailPage() {
         }
         const data = await response.json();
         setOrder(data);
-        setStatus(data.status);
+        setOrderStatus(data.status);
         setTrackingNumber(data.trackingNumber || "");
         setIsLoading(false);
       } catch (error) {
@@ -71,7 +77,7 @@ function AdminOrderDetailPage() {
   }, [params.id, toast]);
 
   const handleStatusChange = async (newStatus: string) => {
-    setStatus(newStatus);
+    setOrderStatus(newStatus);
   };
 
   const handleSave = async () => {
@@ -83,7 +89,7 @@ function AdminOrderDetailPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status,
+          orderStatus,
           trackingNumber,
         }),
       });
@@ -141,7 +147,7 @@ function AdminOrderDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status:</Label>
-              <Select value={status} onValueChange={handleStatusChange}>
+              <Select value={orderStatus} onValueChange={handleStatusChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>

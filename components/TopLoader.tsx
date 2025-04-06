@@ -6,9 +6,11 @@ import { useLoading } from "./LoadingProvider";
 export default function TopLoader() {
   const { isLoading } = useLoading();
   const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (isLoading) {
+      setVisible(true);
       // Reset progress
       setProgress(0);
 
@@ -27,11 +29,17 @@ export default function TopLoader() {
     } else {
       // Complete the progress bar
       setProgress(100);
+
+      // Hide the loader after animation completes
+      const timer = setTimeout(() => {
+        setVisible(false);
+      }, 300); // Match the transition duration
+
+      return () => clearTimeout(timer);
     }
   }, [isLoading]);
 
-  // If not loading and progress is complete, don't render
-  if (!isLoading && progress === 100) return null;
+  if (!visible && !isLoading) return null;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] h-1 bg-transparent">

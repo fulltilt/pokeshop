@@ -14,7 +14,7 @@ export default async function AdminDashboard() {
   const cardCount = await prismaClient.item.count();
   const userCount = await prismaClient.user.count();
   const orderCount = await prismaClient.order.count();
-  const lowStockCards = await prismaClient.item.count({
+  const lowStockItems = await prismaClient.item.count({
     where: { quantity: { lte: 5 } },
   });
 
@@ -48,10 +48,10 @@ export default async function AdminDashboard() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Low Stock Cards</CardTitle>
+            <CardTitle>Low Stock Items</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">{lowStockCards}</p>
+            <p className="text-4xl font-bold">{lowStockItems}</p>
           </CardContent>
         </Card>
       </div>

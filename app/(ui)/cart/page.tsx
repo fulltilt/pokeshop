@@ -164,7 +164,7 @@ export default function CartPage() {
           <div className="text-center space-y-4">
             <p>Your cart is empty.</p>
             <Button>
-              <Link href="/cards">Browse Cards</Link>
+              <Link href="/items">Browse Items</Link>
             </Button>
           </div>
         ) : (
@@ -275,7 +275,7 @@ export default function CartPage() {
       </div>
       <div className="text-center mt-8">
         <Button variant="outline">
-          <Link href="/cards">Continue Shopping</Link>
+          <Link href="/items">Continue Shopping</Link>
         </Button>
       </div>
     </div>

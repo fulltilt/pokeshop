@@ -64,7 +64,7 @@ export default function ManageItems() {
         throw new Error("Failed to fetch items");
       }
       const data = await response.json();
-      setItems(data);
+      setItems(data.items);
     } catch (error) {
       console.error("Error fetching items:", error);
       toast.error("Failed to load items. Please try again.");
@@ -80,7 +80,7 @@ export default function ManageItems() {
   const handleItemDeleted = async () => {
     fetchItems();
   };
-
+  console.log(items);
   return (
     <div className="container mx-auto p-4 gap-4">
       <h1 className="text-3xl font-bold">Manage Items</h1>

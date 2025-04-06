@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "DJCollects",
-  description: "Buy individual Pokémon cards for your collection",
+  description: "Buy individual Pokémon items for your collection",
 };
 
 export default function RootLayout({

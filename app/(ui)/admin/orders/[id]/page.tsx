@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { orderSchema } from "../../../../lib/schema";
+import { orderSchema } from "@/lib/schema";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
 
@@ -47,7 +47,10 @@ function AdminOrderDetailPage() {
   useEffect(() => {
     fetch(`/api/orders/${id}`)
       .then((res) => res.json())
-      .then((res) => setOrder(res));
+      .then((res) => {
+        setOrder(res);
+        setStatus(res.status);
+      });
   }, []);
 
   if (!order) {

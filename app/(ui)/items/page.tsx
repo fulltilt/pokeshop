@@ -1,4 +1,3 @@
-import { prismaClient } from "@/db";
 import {
   Card,
   CardContent,

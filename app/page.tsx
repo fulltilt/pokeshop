@@ -8,14 +8,9 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { auth } from "../lib/auth";
-import { redirect } from "next/navigation";
 import { ItemSchema } from "@/components/AddToCartButton";
 
 export default async function Home() {
-  const session = await auth();
-  if (!session) redirect("/sign-in");
-
   // const items = await prismaClient.item.findMany({ take: 3 });
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items`);
   if (!response.ok) {

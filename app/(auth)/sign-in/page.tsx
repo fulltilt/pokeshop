@@ -19,8 +19,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, AlertTriangle, Lock } from "lucide-react";
 
 export default function LoginPage() {
-  const { data: session } = useSession();
-  if (session) redirect("/");
+  // const { data: session } = useSession();
+  // if (session) redirect("/");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -12,7 +12,7 @@ import { ItemSchema } from "@/components/AddToCartButton";
 
 export default async function ItemsPage() {
   // const items = await prismaClient.item.findMany();
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items`);
+  const response = await fetch(`${process.env.VERCEL_URL}/api/items`);
   if (!response.ok) {
     throw new Error("Failed to fetch items");
   }

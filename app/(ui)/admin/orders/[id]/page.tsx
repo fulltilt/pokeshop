@@ -29,6 +29,8 @@ import { toast } from "sonner";
 import { orderSchema } from "@/lib/schema";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 type OrderSchema = z.infer<typeof orderSchema>;
 
@@ -42,26 +44,73 @@ function AdminOrderDetailPage() {
   const router = useRouter();
   const [order, setOrder] = useState<OrderSchema>();
   const [status, setStatus] = useState(order?.status || "PENDING");
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { id } = params;
   useEffect(() => {
-    fetch(`/api/orders/${id}`)
-      .then((res) => res.json())
-      .then((res) => {
-        setOrder(res);
-        setStatus(res.status);
-      });
-  }, []);
+    const fetchOrder = async () => {
+      try {
+        const response = await fetch(`/api/orders/${params.id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch order");
+        }
+        const data = await response.json();
+        setOrder(data);
+        setStatus(data.status);
+        setTrackingNumber(data.trackingNumber || "");
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching order:", error);
+        toast.error("Failed to load order details");
+        setIsLoading(false);
+      }
+    };
 
-  if (!order) {
-    return <div>Order not found</div>;
-  }
+    fetchOrder();
+  }, [params.id, toast]);
 
   const handleStatusChange = async (newStatus: string) => {
     setStatus(newStatus);
-    // In a real application, you would make an API call here to update the order status
-    toast(`Order #${order.id} status changed to ${newStatus}`);
   };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/orders/${params.id}/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status,
+          trackingNumber,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update order");
+      }
+
+      const updatedOrder = await response.json();
+      setOrder(updatedOrder);
+
+      toast(`Order #${order!.id} has been updated successfully`);
+    } catch (error) {
+      console.error("Error updating order:", error);
+      toast.error("Failed to update order");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="text-center py-8">Loading order details...</div>;
+  }
+
+  if (!order) {
+    return <div className="text-center py-8">Order not found</div>;
+  }
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -88,22 +137,40 @@ function AdminOrderDetailPage() {
           <div>
             <strong>Total Amount:</strong> ${order.total.toFixed(2)}
           </div>
-          <div className="flex items-center space-x-2">
-            <strong>Status:</strong>
-            <Select value={status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="PAID">Paid</SelectItem>
-                <SelectItem value="SHIPPED">Shipped</SelectItem>
-                <SelectItem value="DELIVERED">Delivered</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="status">Status:</Label>
+              <Select value={status} onValueChange={handleStatusChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="PAID">Paid</SelectItem>
+                  <SelectItem value="SHIPPED">Shipped</SelectItem>
+                  <SelectItem value="DELIVERED">Delivered</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="trackingNumber">Tracking Number:</Label>
+              <Input
+                id="trackingNumber"
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                placeholder="Enter tracking number"
+              />
+            </div>
           </div>
-          <Table>
+
+          <Button onClick={handleSave} disabled={isSaving} className="mt-4">
+            {isSaving ? "Saving..." : "Save Changes"}
+          </Button>
+
+          <Table className="mt-6">
             <TableHeader>
               <TableRow>
                 <TableHead>Item</TableHead>
@@ -113,7 +180,7 @@ function AdminOrderDetailPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {order.items.map((item) => (
+              {order.items.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.item.name}</TableCell>
                   <TableCell>{item.quantity}</TableCell>

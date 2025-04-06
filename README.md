@@ -48,6 +48,7 @@ TODO
 "presets": ["next/babel"]
 }
 
+-AdminOrderDetailPage why does it go to / when refreshing
+
 -infinite scrolling
 -placeholder image
--search feature

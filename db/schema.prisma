@@ -125,6 +125,7 @@ model Order {
   country       String
   zipCode       String
   total   Float
+  trackingNumber  String?
   status        OrderStatus @default(PENDING)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

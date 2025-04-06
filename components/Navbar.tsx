@@ -86,9 +86,11 @@ export default function Navbar() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  {/* <Button variant="ghost" size="icon" className="rounded-full"> */}
+                  <div className="cursor-pointer rounded-full border-solid border-1 border-white">
                     <User className="h-5 w-5" />
-                  </Button>
+                  </div>
+                  {/* </Button> */}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>

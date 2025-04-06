@@ -163,7 +163,7 @@ export default function CartPage() {
         {cartItems.length === 0 ? (
           <div className="text-center space-y-4">
             <p>Your cart is empty.</p>
-            <Button asChild>
+            <Button>
               <Link href="/cards">Browse Cards</Link>
             </Button>
           </div>

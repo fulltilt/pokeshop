@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
             </p>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button asChild variant="outline">
+            <Button variant="outline">
               <Link href="/sign-in">Return to Login</Link>
             </Button>
           </CardFooter>
@@ -111,7 +111,7 @@ export default function ForgotPasswordPage() {
             >
               {isSubmitting ? "Sending..." : "Send Reset Link"}
             </Button>
-            <Button asChild variant="ghost" className="w-full">
+            <Button variant="ghost" className="w-full">
               <Link href="/sign-in">Back to Login</Link>
             </Button>
           </CardFooter>

@@ -119,7 +119,7 @@ export function SearchBar() {
   return (
     <>
       {/* Desktop search button */}
-      <Button
+      {/* <Button
         variant="outline"
         className="hidden md:flex items-center gap-2 w-64 justify-between text-muted-foreground"
         onClick={toggleSearch}
@@ -131,18 +131,13 @@ export function SearchBar() {
         <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
-      </Button>
+      </Button> */}
 
       {/* Mobile search button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden"
-        onClick={toggleSearch}
-      >
-        <Search className="h-5 w-5" />
-        <span className="sr-only">Search</span>
-      </Button>
+      <div onClick={toggleSearch} className="flex cursor-pointer gap-1">
+        <Search className="h-4 w-4 mt-1" />
+        <span className="max-md:hidden">Search</span>
+      </div>
 
       {/* Search dialog */}
       <CommandDialog

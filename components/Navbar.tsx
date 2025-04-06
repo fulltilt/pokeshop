@@ -85,7 +85,7 @@ export default function Navbar() {
               </Link>
 
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <User className="h-5 w-5" />
                   </Button>
@@ -95,7 +95,7 @@ export default function Navbar() {
                     {session?.user?.name || session?.user?.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem>
                     <Link href="/profile" className="cursor-pointer w-full">
                       Profile
                     </Link>

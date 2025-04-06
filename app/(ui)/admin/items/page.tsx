@@ -108,7 +108,7 @@ export default function ManageItems() {
                 <TableCell>${item.price.toFixed(2)}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
                 <TableCell>
-                  <Button asChild size="sm" variant="outline" className="mr-2">
+                  <Button size="sm" variant="outline" className="mr-2">
                     <Link href={`/admin/items/edit/${item.id}`}>Edit</Link>
                   </Button>
                   <DeleteItemButton

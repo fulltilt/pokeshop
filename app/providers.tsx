@@ -15,8 +15,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <footer className="flex gap-8 justify-center bg-muted text-muted-foreground p-4 mt-auto">
-          + <div className=" ">© 2025 DJCollects. All rights reserved.</div>+{" "}
-          <Link href="return-policy">Return Policy</Link>+{" "}
+          <div className=" ">© 2025 DJCollects. All rights reserved.</div>
+          <Link href="return-policy">Return Policy</Link>
           <Link href="privacy-policy">Privacy Policy</Link>
         </footer>
         <Toaster />

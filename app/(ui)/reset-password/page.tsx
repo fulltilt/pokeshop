@@ -128,7 +128,7 @@ export default function ResetPasswordPage() {
             </p>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button asChild>
+            <Button>
               <Link href="/forgot-password">Request New Reset Link</Link>
             </Button>
           </CardFooter>
@@ -178,7 +178,7 @@ export default function ResetPasswordPage() {
             >
               {isSubmitting ? "Resetting..." : "Reset Password"}
             </Button>
-            <Button asChild variant="ghost" className="w-full">
+            <Button variant="ghost" className="w-full">
               <Link href="/sign-in">Back to Login</Link>
             </Button>
           </CardFooter>

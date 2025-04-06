@@ -177,7 +177,7 @@ export default function AdminOrdersPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Button asChild size="sm" variant="outline">
+                      <Button size="sm" variant="outline">
                         <Link href={`/admin/orders/${order.id}`}>
                           View Details
                         </Link>

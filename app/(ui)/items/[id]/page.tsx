@@ -10,6 +10,7 @@ import {
 import AddToCartButton from "@/components/AddToCartButton";
 import { getS3ImageUrl } from "@/app/api/images/route";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 export default async function CardDetailsPage({
   params,
@@ -24,6 +25,10 @@ export default async function CardDetailsPage({
   if (!item) {
     notFound();
   }
+
+  const formattedReleaseDate = item.releaseDate
+    ? format(new Date(item.releaseDate), "MMMM d, yyyy")
+    : "Unknown";
 
   const imageUrl = await getS3ImageUrl(item.image);
 
@@ -54,6 +59,9 @@ export default async function CardDetailsPage({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <strong>In Stock:</strong> {item.quantity > 0 ? "Yes" : "No"}
+            </div>
+            <div>
+              <strong>Release Date:</strong> {formattedReleaseDate}
             </div>
           </div>
         </CardContent>

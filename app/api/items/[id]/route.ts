@@ -75,6 +75,8 @@ export async function PUT(
       return NextResponse.json({ error: "Card not found" }, { status: 404 });
     }
 
+    const releaseDate = data.releaseDate ? new Date(data.releaseDate) : null;
+
     // Update the card
     const updatedItem = await prismaClient.item.update({
       where: { id: parseInt(id) },
@@ -84,6 +86,7 @@ export async function PUT(
         price: data.price,
         description: data.description,
         quantity: data.quantity,
+        releaseDate,
       },
     });
 

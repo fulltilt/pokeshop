@@ -107,6 +107,7 @@ model Item {
   price       Float
   description String
   quantity     Int
+  releaseDate DateTime?
   category    CategoryType @default(BOX)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

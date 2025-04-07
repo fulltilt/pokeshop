@@ -11,6 +11,7 @@ export const itemSchema = z.object({
   price: z.number(),
   description: z.string(),
   quantity: z.number(),
+  releaseDate: z.date().nullable(),
 });
 
 export const orderSchema = z.object({

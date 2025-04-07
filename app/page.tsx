@@ -16,7 +16,7 @@ import { getItems } from "./api/items/route";
 export default async function Home() {
   const data = await getItems({
     page: 1,
-    limit: 10,
+    limit: 3,
     search: "",
     category: "",
   });

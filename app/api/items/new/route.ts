@@ -3,7 +3,8 @@ import { prismaClient } from "@/db";
 
 export async function POST(req: Request) {
   try {
-    const { name, image, price, description, quantity } = await req.json();
+    const { name, image, price, description, quantity, releaseDate } =
+      await req.json();
 
     // Create the user
     const user = await prismaClient.item.create({
@@ -13,6 +14,7 @@ export async function POST(req: Request) {
         price,
         description,
         quantity,
+        releaseDate,
       },
     });
 

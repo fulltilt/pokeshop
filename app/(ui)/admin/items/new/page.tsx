@@ -13,9 +13,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { itemSchema } from "@/lib/schema";
 import { useSession } from "next-auth/react";
+import { cn } from "@/lib/utils";
 
 export default function NewCardPage() {
   const { data: session } = useSession();
@@ -29,6 +38,7 @@ export default function NewCardPage() {
     price: "",
     description: "",
     quantity: "",
+    releaseDate: undefined as Date | undefined,
   });
 
   const handleInputChange = (
@@ -36,6 +46,10 @@ export default function NewCardPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    setFormData((prev) => ({ ...prev, releaseDate: date }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +61,7 @@ export default function NewCardPage() {
       return;
     }
 
-    const { name, image, description } = formData;
+    const { name, image, description, releaseDate } = formData;
     const quantity = Number(formData.quantity);
     const price = Number(formData.price);
     const validatedData = itemSchema.parse({
@@ -56,6 +70,7 @@ export default function NewCardPage() {
       price,
       description,
       quantity,
+      releaseDate,
     });
 
     const response = await fetch("/api/items/new", {
@@ -67,6 +82,7 @@ export default function NewCardPage() {
         price: validatedData.price,
         description: validatedData.description,
         quantity: validatedData.quantity,
+        releaseDate: validatedData.releaseDate,
       }),
     });
 
@@ -166,6 +182,33 @@ export default function NewCardPage() {
                 onChange={handleInputChange}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="releaseDate">Release Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !formData.releaseDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.releaseDate
+                      ? format(formData.releaseDate, "PPP")
+                      : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.releaseDate}
+                    onSelect={handleDateChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </CardContent>
           <CardFooter>

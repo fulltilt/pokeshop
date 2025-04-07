@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { ItemSchema } from "@/components/AddToCartButton";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 export default function ManageItems() {
   const { data: session, status } = useSession();
@@ -92,6 +93,16 @@ export default function ManageItems() {
     fetchItems();
   };
 
+  // const formatDate = (dateString: string | null | undefined) => {
+  //   if (!dateString) return "Not set"
+  //   try {
+  //     return format(new Date(dateString), "MMM d, yyyy")
+  //   } catch (e) {
+  //     return "Invalid date"
+  //   }
+  // }
+  // const formattedReleaseDate = item.releaseDate ? format(new Date(item.releaseDate), "MMMM d, yyyy") : "Unknown"
+
   return (
     <div className="container mx-auto p-4 gap-4">
       <h1 className="text-3xl font-bold">Manage Items</h1>
@@ -108,6 +119,7 @@ export default function ManageItems() {
               <TableHead>Name</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Quantity</TableHead>
+              <TableHead>Release Date</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -118,6 +130,11 @@ export default function ManageItems() {
                 <TableCell>{item.name}</TableCell>
                 <TableCell>${item.price.toFixed(2)}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
+                <TableCell>
+                  {item.releaseDate
+                    ? format(new Date(item.releaseDate), "MMMM d, yyyy")
+                    : "Unknown"}
+                </TableCell>
                 <TableCell>
                   <Button size="sm" variant="outline" className="mr-2">
                     <Link href={`/admin/items/edit/${item.id}`}>Edit</Link>

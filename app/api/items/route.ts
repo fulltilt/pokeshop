@@ -52,7 +52,7 @@ export async function getItems({
     const data = await prismaClient.item.findMany({
       where,
       orderBy: {
-        id: "asc", // You can change this to any field
+        releaseDate: "desc", // You can change this to any field
       },
       skip,
       take: limit,
@@ -90,32 +90,23 @@ export async function getItems({
   }
 }
 
-// export async function GET() {
-//   // Get query parameters
-//   // const url = new URL(request.url);
-//   // const page = Number.parseInt(url.searchParams.get("page") || "1");
-//   // const limit = Number.parseInt(url.searchParams.get("limit") || "10");
-//   // const search = url.searchParams.get("search") || undefined;
-//   // const category = url.searchParams.get("category") || undefined;
+export async function GET(request: Request) {
+  // Get query parameters
+  const url = new URL(request.url);
+  const page = Number.parseInt(url.searchParams.get("page") || "1");
+  const limit = Number.parseInt(url.searchParams.get("limit") || "10");
+  const search = url.searchParams.get("search") || "";
+  const category = url.searchParams.get("category") || "";
 
-//   try {
-//     const data = await getItems()
+  try {
+    const data = await getItems({ page, limit, search, category });
 
-//     return NextResponse.json({
-//     items,
-//     pagination: {
-//       page,
-//       limit,
-//       totalCount,
-//       totalPages,
-//       hasMore,
-//     },
-//   });
-// } catch (error) {
-//   console.error("Error fetching items:", error);
-//   return NextResponse.json(
-//     { error: "Failed to fetch items" },
-//     { status: 500 }
-//   );
-// }}
-// }
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch items" },
+      { status: 500 }
+    );
+  }
+}

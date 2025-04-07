@@ -15,7 +15,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DeleteItemButton from "@/components/DeleteItemButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getS3ImageUrl } from "@/app/api/images/route";
 import { z } from "zod";
 import { cartItemSchema } from "@/lib/schema";
 import { useCart } from "@/components/CartProvider";
@@ -194,7 +193,7 @@ export default function CartPage() {
                               </>
                             ) : (
                               <>
-                                <Image
+                                <img
                                   src={
                                     itemDetails[item.itemId]?.image ||
                                     "/placeholder.svg"

@@ -43,7 +43,7 @@ export default function Navbar() {
       <header className="bg-primary text-primary-foreground p-4 sticky top-0 z-50 border-b border-border">
         <nav className="container mx-auto flex justify-between items-center">
           <Link href="/" className="text-xl md:text-2xl font-bold">
-            DJCollects
+            <img src="/logo.svg" alt="DJCollects icon" />
           </Link>
 
           {/* Desktop Navigation */}

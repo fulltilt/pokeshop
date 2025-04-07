@@ -31,7 +31,7 @@ export default async function ItemsPage() {
                 <CardTitle>{item.name}</CardTitle>
               </CardHeader>
               <CardContent className="flex-grow flex items-center justify-center relative min-h-[300px]">
-                <Image
+                <img
                   src={item.image || "/placeholder.svg"}
                   alt={item.name}
                   width={200}

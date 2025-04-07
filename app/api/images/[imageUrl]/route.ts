@@ -14,7 +14,7 @@ const s3 = new S3Client({
   region: process.env.AWS_REGION,
 });
 
-export async function getS3ImageUrl(imageUrl: string) {
+async function getS3ImageUrl(imageUrl: string) {
   try {
     const command = new GetObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME!,

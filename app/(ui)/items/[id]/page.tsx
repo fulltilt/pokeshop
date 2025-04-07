@@ -7,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
-import { getS3ImageUrl } from "@/lib/utils";
+import { getS3ImageUrl } from "@/app/api/images/route";
 import { Button } from "@/components/ui/button";
 
 export default async function CardDetailsPage({

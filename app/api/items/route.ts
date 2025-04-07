@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
 import { ItemSchema } from "@/components/AddToCartButton";
-import { getS3ImageUrl } from "../images/[imageUrl]/route";
+import { getS3ImageUrl } from "@/app/api/images/route";
 
-type Params = { page: number; limit: number; search: string; category: string };
+type Params = {
+  page: number;
+  limit: number;
+  search: string;
+  category: string;
+};
 
 export async function getItems({
   page = 1,

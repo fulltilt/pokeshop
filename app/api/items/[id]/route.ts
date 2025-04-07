@@ -1,19 +1,25 @@
 import { prismaClient } from "@/db";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { getS3ImageUrl } from "../../images/route";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   const id = Number.parseInt((await params).id);
-  const item = await prismaClient.item.findUnique({
+  const data = await prismaClient.item.findUnique({
     where: { id: id },
   });
 
-  if (!item) {
+  if (!data) {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
   }
+
+  const item = {
+    ...data,
+    image: await getS3ImageUrl(data.image),
+  };
 
   return NextResponse.json(item);
 }

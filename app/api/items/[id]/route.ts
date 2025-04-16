@@ -16,12 +16,12 @@ export async function GET(
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
   }
 
-  const item = {
-    ...data,
-    image: await getS3ImageUrl(data.image),
-  };
+  // const item = {
+  //   ...data,
+  //   image: await getS3ImageUrl(data.image),
+  // };
 
-  return NextResponse.json(item);
+  return NextResponse.json(data);
 }
 
 // updating an item

@@ -49,7 +49,7 @@ export async function getItems({
     const totalCount = await prismaClient.item.count({ where });
 
     // Fetch items with pagination
-    const data = await prismaClient.item.findMany({
+    const items = await prismaClient.item.findMany({
       where,
       orderBy: {
         releaseDate: "desc", // You can change this to any field
@@ -58,16 +58,16 @@ export async function getItems({
       take: limit,
     });
 
-    const items = await Promise.all(
-      data.map(async (item: ItemSchema) => {
-        const imageUrl = await getS3ImageUrl(item.image);
+    // const items = await Promise.all(
+    //   data.map(async (item: ItemSchema) => {
+    //     const imageUrl = await getS3ImageUrl(item.image);
 
-        return {
-          ...item,
-          image: imageUrl,
-        };
-      })
-    );
+    //     return {
+    //       ...item,
+    //       image: imageUrl,
+    //     };
+    //   })
+    // );
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(totalCount / limit);

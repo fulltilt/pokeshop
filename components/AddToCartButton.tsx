@@ -17,13 +17,13 @@ export type ItemSchema = z.infer<typeof itemSchema> & { id: number };
 export default function AddToCartButton({ item }: { item: ItemSchema }) {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const { isSignedIn } = useAuth();
   const { updateCartItemsCount } = useCart();
-  
 
   const router = useRouter();
 
   const addToCart = async () => {
-    if (!session?.user) {
+    if (!isSignedIn) {
       toast.error("You need to be logged in to add items to your cart.");
       router.push("/sign-in");
       return;

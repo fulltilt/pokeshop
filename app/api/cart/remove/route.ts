@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session || !session.user) {
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { itemId } = await req.json();
 
   try {
-    const userId = session.user.id;
-
     // Find the cart
     const cart = await prismaClient.cart.findUnique({
       where: { userId: userId },
@@ -24,7 +22,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
-    const cartItemId = cart?.items.filter((item) => item.itemId === itemId)[0]
+    const cartItemId = cart?.items.filter((item) => item.id === itemId)[0]
       .id;
 
     // Remove the item from the cart

@@ -1,5 +1,5 @@
 import { prismaClient } from "@/db";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getS3ImageUrl } from "../../images/route";
 
@@ -29,9 +29,9 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session || !session.user || session.user.role !== "ADMIN") {
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -105,9 +105,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session || !session.user || session.user.role !== "ADMIN") {
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

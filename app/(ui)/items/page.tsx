@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { ItemSchema } from "@/components/AddToCartButton";
 import { getItems } from "@/app/api/items/route";

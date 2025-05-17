@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUser, useAuth } from "@clerk/nextjs";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DeleteItemButton from "@/components/DeleteItemButton";
@@ -24,26 +22,27 @@ import QuantityAdjuster from "@/components/QuantityAdjuster";
 type CartItemSchema = z.infer<typeof cartItemSchema>;
 
 export default function CartPage() {
-  
-
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItemSchema[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [itemDetails, setItemDetails] = useState<Record<number, any>>({});
   const [loadingItems, setLoadingItems] = useState<Record<number, boolean>>({});
+
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const { updateCartItemsCount } = useCart();
 
   // Redirect if not logged in
   useEffect(() => {
-    if (session === null) {
+    if (isLoaded && !isSignedIn) {
       router.push("/sign-in");
     }
-  }, [session, router]);
+  }, [isLoaded, isSignedIn, router]);
 
   // Fetch cart items
   useEffect(() => {
     const fetchCart = async () => {
-      if (!session?.user) return;
+      if (!user) return;
 
       try {
         setIsLoading(true);
@@ -108,10 +107,10 @@ export default function CartPage() {
       }
     };
 
-    if (session?.user) {
+    if (isSignedIn) {
       fetchCart();
     }
-  }, [session]);
+  }, [isSignedIn]);
 
   // Handle item removal
   const handleItemRemoved = useCallback(

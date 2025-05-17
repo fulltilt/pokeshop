@@ -1,14 +1,14 @@
 import { prismaClient } from "@/db";
-import { auth } from "@/lib/auth";
+import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
+  const user = await currentUser();
 
-  if (!session || !session.user) {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

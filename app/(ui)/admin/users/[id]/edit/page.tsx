@@ -44,7 +44,8 @@ type UserData = {
 };
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
-  
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
 
   const router = useRouter();
 
@@ -59,14 +60,14 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    // Wait until session is loaded
-    if (status === "loading") return;
+    // Wait until auth is loaded
+    if (!isLoaded) return;
 
-    // Redirect if not admin
-    if (!session || session!.user!.role !== "ADMIN") {
+    // Redirect if not signed in or not admin
+    if (!isSignedIn || user?.publicMetadata?.role !== "ADMIN") {
       router.replace("/");
     }
-  }, [session, status, router]);
+  }, [isLoaded, isSignedIn, user, router]);
 
   useEffect(() => {
     const fetchUser = async () => {

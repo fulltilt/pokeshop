@@ -8,7 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function ThankYouPage({
   searchParams,
@@ -16,8 +17,11 @@ export default async function ThankYouPage({
   searchParams: { stripeSessionId?: string; orderId?: string };
 }) {
   const orderId = await searchParams.orderId;
-  const session = await auth();
-  const userId = session?.user?.id;
+  const { userId } = await auth();
+  
+  if (!userId) {
+    redirect("/sign-in");
+  }
 
   const order = await prismaClient.order.findUnique({
     where: {

@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
-import { auth } from "@/lib/auth";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
+  const { userId } = await auth();
+  const user = await currentUser();
   const id = (await params).id;
 
   // Check if user is authenticated and is an admin
-  if (!session || !session.user || session.user.role !== "ADMIN") {
+  if (!userId || !user || user.publicMetadata.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

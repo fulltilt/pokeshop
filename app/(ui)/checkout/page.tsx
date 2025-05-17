@@ -1,17 +1,13 @@
-// import { getServerSession } from "next-auth/next"
-// import { authOptions } from "@/lib/auth"
 import { prismaClient } from "@/db";
 import { redirect } from "next/navigation";
 import CheckoutForm from "@/components/CheckoutForm";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function CheckoutPage() {
-  const session = await auth();
-  if (!session || !session.user) {
+  const { userId } = await auth();
+  if (!userId) {
     redirect("/sign-in");
   }
-
-  const userId = session?.user?.id;
 
   const cart = await prismaClient.cart.findUnique({
     where: { userId: userId },

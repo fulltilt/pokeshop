@@ -54,7 +54,8 @@ type PaginationData = {
 };
 
 export default function ManageUsers() {
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const router = useRouter();
 
   const [users, setUsers] = useState<User[]>([]);
@@ -71,14 +72,14 @@ export default function ManageUsers() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    // Wait until session is loaded
-    if (status === "loading") return;
+    // Wait until auth is loaded
+    if (!isLoaded) return;
 
-    // Redirect if not admin
-    if (!session || session!.user!.role !== "ADMIN") {
+    // Redirect if not signed in or not admin
+    if (!isSignedIn || user?.publicMetadata?.role !== "ADMIN") {
       router.replace("/");
     }
-  }, [session, status, router]);
+  }, [isLoaded, isSignedIn, user, router]);
 
   const fetchUsers = async (page = 1, search = searchTerm) => {
     setIsLoading(true);

@@ -33,7 +33,7 @@ import { z } from "zod";
 import { orderSchema } from "@/lib/schema";
 import { useUser, useAuth } from "@clerk/nextjs";
 
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type OrderSchema = z.infer<typeof orderSchema>;
 
@@ -46,7 +46,9 @@ type PaginationData = {
 };
 
 export default function AdminOrdersPage() {
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  
   const router = useRouter();
 
   const [orders, setOrders] = useState<OrderSchema[]>([]);
@@ -61,14 +63,14 @@ export default function AdminOrdersPage() {
   });
 
   useEffect(() => {
-    // Wait until session is loaded
-    if (status === "loading") return;
+    // Wait until auth is loaded
+    if (!isLoaded) return;
 
-    // Redirect if not admin
-    if (!session || session!.user!.role !== "ADMIN") {
+    // Redirect if not signed in or not admin
+    if (!isSignedIn || user?.publicMetadata?.role !== "ADMIN") {
       router.replace("/");
     }
-  }, [session, status, router]);
+  }, [isLoaded, isSignedIn, user, router]);
 
   const fetchOrders = async (page = 1, status = statusFilter) => {
     setIsLoading(true);

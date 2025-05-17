@@ -2,12 +2,14 @@ import { prismaClient } from "@/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { auth, currentUser } from "@clerk/nextjs/server";  
 import { redirect } from "next/navigation";
 
 export default async function AdminDashboard() {
-  const session = await auth();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
+  const { userId } = await auth();
+  const user = await currentUser();
+  
+  if (!userId || !user || user.publicMetadata.role !== "ADMIN") {
     redirect("/");
   }
 

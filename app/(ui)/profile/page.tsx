@@ -3,16 +3,16 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function ProfilePage() {
-  const session = await auth();
-  if (!session || !session.user) {
+  const { userId } = await auth();
+  if (!userId) {
     redirect("/sign-in");
   }
 
   const user = await prismaClient.user.findUnique({
-    where: { email: session.user.email! },
+    where: { email: userId },
     include: { orders: { include: { items: { include: { item: true } } } } },
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,7 +28,7 @@ import {
 import { toast } from "sonner";
 import { orderSchema } from "@/lib/schema";
 import { z } from "zod";
-import { useUser, useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,9 @@ import { Input } from "@/components/ui/input";
 type OrderSchema = z.infer<typeof orderSchema>;
 
 function AdminOrderDetailPage() {
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  
   const params = useParams();
   const router = useRouter();
   const [order, setOrder] = useState<OrderSchema>();
@@ -46,14 +48,14 @@ function AdminOrderDetailPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    // Wait until session is loaded
-    if (status === "loading") return;
+    // Wait until auth is loaded
+    if (!isLoaded) return;
 
-    // Redirect if not admin
-    if (!session || session!.user!.role !== "ADMIN") {
+    // Redirect if not signed in or not admin
+    if (!isSignedIn || user?.publicMetadata?.role !== "ADMIN") {
       router.replace("/");
     }
-  }, [session, status, router]);
+  }, [isLoaded, isSignedIn, user, router]);
 
   useEffect(() => {
     const fetchOrder = async () => {

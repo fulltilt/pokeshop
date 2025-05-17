@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session || !session.user) {
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { itemId, quantity } = await req.json();
 
   try {
-    const userId = session.user.id!;
-
     // Check if the item exists and has enough stock
     const item = await prismaClient.item.findUnique({
       where: { id: itemId },
@@ -32,21 +30,21 @@ export async function POST(req: Request) {
 
     // Get or create the user's cart
     let cart = await prismaClient.cart.findUnique({
-      where: { userId: userId },
+      where: { userId },
       include: { items: true },
     });
 
     if (!cart) {
       cart = await prismaClient.cart.create({
-        data: { userId: userId },
+        data: { userId },
         include: { items: true },
       });
     }
 
     // Check if the item is already in the cart
-    const existingItem = cart?.items.find((item) => item.itemId === itemId);
+    const existingItem = cart.items.find((item) => item.itemId === itemId);
 
-    // Calculate the new quantity (existing + requested)
+    // Calculate the new quantity
     const newQuantity = existingItem
       ? existingItem.quantity + quantity
       : quantity;
@@ -64,18 +62,18 @@ export async function POST(req: Request) {
     }
 
     if (existingItem) {
-      // Update the quantity if the item already exists
+      // Update quantity
       await prismaClient.cartItem.update({
         where: { id: existingItem.id },
         data: { quantity: newQuantity },
       });
     } else {
-      // Add a new item to the cart
+      // Add new cart item
       await prismaClient.cartItem.create({
         data: {
-          cartId: cart?.id,
-          itemId: itemId,
-          quantity: quantity,
+          cartId: cart.id,
+          itemId,
+          quantity,
         },
       });
     }

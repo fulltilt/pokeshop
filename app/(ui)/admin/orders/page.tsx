@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/pagination";
 import { z } from "zod";
 import { orderSchema } from "@/lib/schema";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 import { redirect, useRouter } from "next/navigation";
 
 type OrderSchema = z.infer<typeof orderSchema>;

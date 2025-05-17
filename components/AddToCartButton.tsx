@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useCart } from "./CartProvider";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 import { useRouter } from "next/navigation";
 import { itemSchema } from "@/lib/schema";
 import { z } from "zod";
@@ -17,7 +18,8 @@ export default function AddToCartButton({ item }: { item: ItemSchema }) {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const { updateCartItemsCount } = useCart();
-  const { data: session } = useSession();
+  
+
   const router = useRouter();
 
   const addToCart = async () => {

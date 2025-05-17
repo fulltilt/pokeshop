@@ -8,7 +8,8 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 
 type CartContextType = {
   cartItemsCount: number;
@@ -21,10 +22,12 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session } = useSession();
+  
+  const { user } = useUser();
+  const { isSignedIn } = useAuth();
 
   const updateCartItemsCount = useCallback(async () => {
-    if (!session?.user) {
+    if (!user) {
       setCartItemsCount(0);
       return;
     }
@@ -50,7 +53,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [session]);
+  }, [user]);
 
   // Update cart count when session changes
   useEffect(() => {

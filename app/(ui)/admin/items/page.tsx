@@ -14,25 +14,26 @@ import { toast } from "sonner";
 import DeleteItemButton from "@/components/DeleteItemButton";
 import { useEffect, useState } from "react";
 import { ItemSchema } from "@/components/AddToCartButton";
-import { useSession } from "next-auth/react";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 
 export default function ManageItems() {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const [items, setItems] = useState<ItemSchema[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Wait until session is loaded
-    if (status === "loading") return;
+    // Wait until auth is loaded
+    if (!isLoaded) return;
 
-    // Redirect if not admin
-    if (!session || session!.user!.role !== "ADMIN") {
+    // Redirect if not signed in or not admin
+    if (!isSignedIn || user?.publicMetadata?.role !== "ADMIN") {
       router.replace("/");
     }
-  }, [session, status, router]);
+  }, [isLoaded, isSignedIn, user, router]);
 
   const fetchItems = async () => {
     setIsLoading(true);
@@ -141,8 +142,7 @@ export default function ManageItems() {
                   </Button>
                   <DeleteItemButton
                     itemId={item.id}
-                    name={item.name}
-                    onDeleted={handleItemDeleted}
+                    onRemoveSuccess={handleItemDeleted}
                   />
                 </TableCell>
               </TableRow>

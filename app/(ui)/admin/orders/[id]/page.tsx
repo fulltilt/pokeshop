@@ -28,7 +28,8 @@ import {
 import { toast } from "sonner";
 import { orderSchema } from "@/lib/schema";
 import { z } from "zod";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 

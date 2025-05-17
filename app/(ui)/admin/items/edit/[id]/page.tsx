@@ -25,10 +25,19 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { itemSchema } from "@/lib/schema";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 export default function EditItemPage({ params }: { params: { id: string } }) {
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+
+  // Check if user is admin
+  const isAdmin = user?.publicMetadata?.role === "ADMIN";
+
+  if (!isAdmin) {
+    redirect("/");
+  }
+
   const router = useRouter();
   const { id } = useParams();
 
@@ -42,16 +51,6 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    // Wait until session is loaded
-    if (status === "loading") return;
-
-    // Redirect if not admin
-    if (!session || session!.user!.role !== "ADMIN") {
-      router.replace("/");
-    }
-  }, [session, status, router]);
 
   useEffect(() => {
     fetch(`/api/items/${id}`)

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,7 +24,8 @@ import QuantityAdjuster from "@/components/QuantityAdjuster";
 type CartItemSchema = z.infer<typeof cartItemSchema>;
 
 export default function CartPage() {
-  const { data: session } = useSession();
+  
+
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItemSchema[]>([]);
   const [isLoading, setIsLoading] = useState(true);

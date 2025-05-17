@@ -23,12 +23,15 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { itemSchema } from "@/lib/schema";
-import { useSession } from "next-auth/react";
+import { auth, currentUser } from "@clerk/nextjs/server";
+
 import { cn } from "@/lib/utils";
 
-export default function NewCardPage() {
-  const { data: session } = useSession();
-  if (!session || !session.user || session.user.role !== "ADMIN") {
+export default async function NewItemPage() {
+  const { userId } = await auth();
+  const user = await currentUser();
+  
+  if (!userId || !user || user.publicMetadata.role !== "ADMIN") {
     redirect("/");
   }
 

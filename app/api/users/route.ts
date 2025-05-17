@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prismaClient } from "@/db";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 

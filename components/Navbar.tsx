@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "./CartProvider";
 import {
@@ -25,18 +24,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SearchBar } from "./SearchBar";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const { user } = useUser();
+  const { isSignedIn, signOut, isLoaded } = useAuth();
+  
   const { cartItemsCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
-  const isLoading = status === "loading";
-  const isAuthenticated = status === "authenticated";
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isLoading = isLoaded === false;
+  const isAdmin = user?.publicMetadata?.role === "ADMIN";
 
   return (
     <div>
@@ -80,7 +81,7 @@ export default function Navbar() {
 
             {/* Cart Icon - Always render to maintain layout */}
             <div className="relative">
-              {(isAuthenticated || isLoading) && (
+              {(isSignedIn || isLoading) && (
                 <Link href="/cart" className="hover:underline relative">
                   <ShoppingCart className="h-6 w-6" />
                   {cartItemsCount > 0 && (
@@ -100,7 +101,7 @@ export default function Navbar() {
             <div className="min-w-[100px] flex justify-end">
               {isLoading ? (
                 <div className="w-5 h-5 rounded-full animate-pulse bg-primary-foreground/30"></div>
-              ) : isAuthenticated ? (
+              ) : isSignedIn ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger>
                     <div className="cursor-pointer rounded-full border-solid border-1 border-white">
@@ -108,8 +109,8 @@ export default function Navbar() {
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>
-                      {session?.user?.name || session?.user?.email}
+                    <DropdownMenuLabel>{user?.username}
+                      {/* {session?.user?.name || session?.user?.email} */}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -144,7 +145,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-2 md:hidden gap-2">
             {/* Cart Icon - Always render with consistent width for mobile */}
             <div className="w-6 relative">
-              {(isAuthenticated || isLoading) && (
+              {(isSignedIn || isLoading) && (
                 <Link href="/cart" className="hover:underline relative mr-2">
                   <ShoppingCart className="h-6 w-6" />
                   {cartItemsCount > 0 && (
@@ -194,7 +195,7 @@ export default function Navbar() {
                 <div className="p-2">
                   <div className="h-5 w-32 bg-primary-foreground/30 animate-pulse rounded"></div>
                 </div>
-              ) : isAuthenticated ? (
+              ) : isSignedIn ? (
                 <>
                   {isAdmin && (
                     <Link

@@ -33,7 +33,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useSession } from "next-auth/react";
+import { useUser, useAuth } from "@clerk/nextjs";
+
 
 type UserData = {
   id: number;
@@ -43,7 +44,8 @@ type UserData = {
 };
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
-  const { data: session } = useSession();
+  
+
   const router = useRouter();
 
   const [formData, setFormData] = useState({

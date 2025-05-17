@@ -6,9 +6,9 @@ export async function POST(req: Request) {
     console.log("Received eBay webhook:", JSON.stringify(body, null, 2));
 
     // Optional: Validate eBay payload here
-    if (!body?.metadata?.marketplaceId) {
-      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
-    }
+    // if (!body?.metadata?.marketplaceId) {
+    //   return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    // }
 
     // Process the payload as needed
     return NextResponse.json({ success: true });

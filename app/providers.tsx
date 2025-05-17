@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { CartProvider } from "@/components/CartProvider";
 import Navbar from "@/components/Navbar";
-import { SessionProvider } from "next-auth/react";
+import { ClerkProvider } from '@clerk/nextjs'
 import Link from "next/link";
 import { Toaster } from "sonner";
 import TopLoader from "@/components/TopLoader";
@@ -11,7 +11,7 @@ import { LoadingProvider } from "@/components/LoadingProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <ClerkProvider>
       <CartProvider>
         <Suspense fallback={null}>
           <LoadingProvider>
@@ -30,6 +30,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <Toaster />
         </Suspense>
       </CartProvider>
-    </SessionProvider>
+    </ClerkProvider>
   );
 }

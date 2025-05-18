@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 const isPublicRoute = createRouteMatcher([
   "/",                    // homepage
   "/api/webhooks/stripe",
+  "/api/webhooks/clerk",
   "/sign-in(.*)",         // catch all subpaths under sign-in
   "/sign-up(.*)",         // catch all subpaths under sign-up
   "/api/public(.*)",      // any public APIs

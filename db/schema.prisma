@@ -20,50 +20,13 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
-  accounts      Account[]
   sessions      Session[]
   role          UserRole @default(CUSTOMER)
   orders        Order[]
   cart      Cart?
-  resetToken PasswordResetToken?
-
-  loginAttempts Int @default(0)
-  lockedUntil DateTime?
-
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-}
-
-model PasswordResetToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  userId    String      @unique
-  user      User     @relation(fields: [userId], references: [id])
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@id([provider, providerAccountId])
 }
 
 model Session {
@@ -76,30 +39,6 @@ model Session {
   updatedAt DateTime @updatedAt
 }
  
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
- 
-  @@id([identifier, token])
-}
- 
-// Optional for WebAuthn support
-model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@id([userId, credentialID])
-}
-
 model Item {
   id          Int         @id @default(autoincrement())
   name        String

@@ -86,7 +86,7 @@ export default function ManageItems() {
   //   }
   // };
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return <div>Loading...</div>; // Or a spinner
   }
 

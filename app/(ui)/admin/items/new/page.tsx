@@ -26,12 +26,16 @@ import { itemSchema } from "@/lib/schema";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 import { cn } from "@/lib/utils";
+import { useAuth, useUser } from "@clerk/nextjs";
 
-export default async function NewItemPage() {
-  const { userId } = await auth();
-  const user = await currentUser();
-  
-  if (!userId || !user || user.publicMetadata.role !== "ADMIN") {
+export default function NewItemPage() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+
+  // Check if user is admin
+  const isAdmin = user?.publicMetadata?.role === "ADMIN";
+
+  if (!isAdmin) {
     redirect("/");
   }
 

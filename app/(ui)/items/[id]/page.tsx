@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import AddToCartButton from "@/components/AddToCartButton";
-import { getS3ImageUrl } from "@/app/api/images/route";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 
@@ -30,7 +29,6 @@ export default async function CardDetailsPage({
     ? format(new Date(item.releaseDate), "MMMM d, yyyy")
     : "Unknown";
 
-  const imageUrl = await getS3ImageUrl(item.image);
 
   return (
     <div className="max-w-2xl mx-auto flex">
@@ -41,7 +39,7 @@ export default async function CardDetailsPage({
         <CardContent className="gap-4 overflow-y-auto">
           <div className="relative">
             <img
-              src={imageUrl || "/placeholder.svg"}
+              src={item.image || "/placeholder.svg"}
               alt={item.name}
               width={300}
               height={450}

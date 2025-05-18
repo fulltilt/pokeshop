@@ -39,14 +39,12 @@ https://medium.com/@zorenal/fetching-and-rendering-images-from-aws-s3-using-next
 https://neon.tech/guides/next-upload-aws-s3
 
 WEBHOOK
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
+stripe listen --forward-to localhost:3000/api/webhooks/stripe # you don't need this
+1. ngrok http 3000 (get url and set it up web hook in Stripe dashboard. Url will looks something like ${ngrok url}/api/webhooks/stripe)
+2. Make sure Stripe secret and publishable key are correct in .env
+3. Once webhook is created, get the Stripe webhook secret and put that in .env (each webhook will have it's own webhook secret)
 
 TODO
-//.babelrc
-
-{
-"presets": ["next/babel"]
-}
 
 -AdminOrderDetailPage why does it go to / when refreshing
 

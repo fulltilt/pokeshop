@@ -16,7 +16,7 @@ export default async function ThankYouPage({
 }: {
   searchParams: { stripeSessionId?: string; orderId?: string };
 }) {
-  const orderId = await searchParams.orderId;
+  const orderId = (await searchParams).orderId;
   const { userId } = await auth();
   
   if (!userId) {

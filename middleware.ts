@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 // Mark routes that should be public (not protected)
 const isPublicRoute = createRouteMatcher([
   "/",                    // homepage
+  "/api/webhooks/stripe",
   "/sign-in(.*)",         // catch all subpaths under sign-in
   "/sign-up(.*)",         // catch all subpaths under sign-up
   "/api/public(.*)",      // any public APIs

@@ -24,12 +24,12 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
-
+console.log(event.type)
   // if (event.type === 'payment_intent.succeeded')
   // if (event.type === 'payment_intent.payment_failed')
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-
+console.log(session)
     // Update order status to PAID
     await prismaClient.order.update({
       where: { id: Number.parseInt(session.metadata!.orderId!) },

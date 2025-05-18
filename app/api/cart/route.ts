@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-// import { getServerSession } from "next-auth/next"
-// import { authOptions } from "@/lib/auth"
 import { prismaClient } from "@/db";
 import { auth, currentUser } from "@clerk/nextjs/server";
 

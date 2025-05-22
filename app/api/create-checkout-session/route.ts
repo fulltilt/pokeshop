@@ -30,8 +30,7 @@ export async function POST(req: NextRequest) {
         country: customer.country,
         zipCode: customer.zipCode,
         total: items.reduce(
-          (total: number, item: any) =>
-            total + item.item.price * item.quantity,
+          (total: number, item: any) => total + item.item.price * item.quantity,
           0
         ),
         items: {
@@ -61,11 +60,32 @@ export async function POST(req: NextRequest) {
         quantity: item.quantity,
       })),
       mode: "payment",
+      automatic_tax: { enabled: true },
       success_url: `${req.headers.get(
         "origin"
       )}/thank-you?stripeSessionId={CHECKOUT_SESSION_ID}&orderId=${order.id}`,
       cancel_url: `${req.headers.get("origin")}/checkout`,
       customer_email: customer.email,
+      billing_address_collection: "required",
+      shipping_address_collection: {
+        allowed_countries: ["US"], // adjust as needed
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 800, // in cents (i.e. $5.00)
+              currency: "usd",
+            },
+            display_name: "Standard Shipping",
+            delivery_estimate: {
+              minimum: { unit: "business_day", value: 5 },
+              maximum: { unit: "business_day", value: 7 },
+            },
+          },
+        },
+      ],
       metadata: {
         orderId: order.id.toString(),
         testMetadata: "true",
